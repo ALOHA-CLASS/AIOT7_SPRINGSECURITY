@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/main_layout}"
+      >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>메인 화면</title>
+</head>
+<!-- ⭐ layout:fragment="레이아웃 프레그먼트 이름" -->
+<body layout:fragment="content">
+
+  <div class="container col-12 col-lg-4">
+    <div class="px-4 py-5 mt-5 text-center">
+        <h1 class="display-5 fw-bold text-body-emphasis">메인 화면</h1>
+    </div>
+
+    <!-- 비 로그인 시 -->
+    <th:block sec:authorize="isAnonymous()">
+      <div class="d-grid gap-2">
+        <a href="/login" class="btn btn-lg btn-primary">로그인</a>
+        <a href="/join" class="btn btn-lg btn-success">회원가입</a>
+      </div>
+    </th:block>
+
+    <!-- 로그인 시 -->
+    <th:block sec:authorize="isAuthenticated()">
+      <div class="card">
+        <div class="inner p-4">
+          <div class="d-flex flex-column align-items-center">
+            <div class="item my-2">
+              <h3>
+                아이디 : <span sec:authentication="name"></span>
+              </h3>
+            </div>
+            <div class="item my-2">
+              <h3>
+                권한 : <span sec:authentication="authorities"></span>
+              </h3>
+            </div>
+            <div class="item my-2 w-100">
+              <p>
+                사용자 객체 : <span sec:authentication="principal"></span>
+              </p>
+            </div>
+            <!-- ⭐ sec:authentication="principal" ➡ CustomUser -->
+            <!-- 👩‍💼 CustomUser 안에 Users user 객체가 있다 -->
+            <div class="item my-2">
+                <h5>
+                    이름 : <span sec:authentication="principal.user.name"></span>
+                </h5>
+            </div>
+            <div class="item my-2">
+                <h5>
+                    이메일 : <span sec:authentication="principal.user.email"></span>
+                </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <form action="/logout" method="post">
+        <!-- CSRF TOKEN -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-lg btn-primary">로그아웃</button>
+        </div>
+      </form>
+    </th:block>
+
+  </div>
+
+</body>
+</html>

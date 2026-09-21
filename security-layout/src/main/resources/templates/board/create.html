@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <!-- CSRF TOKEN -->
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 프로젝트</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<main>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-10 col-lg-6">
+        <h1 class="text-center">게시글 등록</h1>
+
+        <!-- action 제거 or 의미만 유지 -->
+        <form id="boardForm">
+          <div class="mb-3">
+            <label class="form-label">제목</label>
+            <input type="text" class="form-control" name="title" id="title" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">내용</label>
+            <textarea class="form-control" name="content" id="content" rows="5"></textarea>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary">등록</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const csrfHeader = document.querySelector("meta[name='_csrf_header']").getAttribute("content")
+  const csrfToken = document.querySelector("meta[name='_csrf']").getAttribute("content")
+
+document.getElementById("boardForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); // 기본 submit 막기
+
+    const data = {
+        title: document.getElementById("title").value,
+        content: document.getElementById("content").value
+    };
+
+    try {
+        const response = await fetch("/board", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              [csrfHeader] : csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+
+        console.log(response);
+        // response.ok : 응답상태 성공(true), 실패(false) 여부
+        console.log("ok : " + response.ok);
+        
+        // 응답 본문의 데이터를 텍스트로 변환
+        const text = await response.text()
+        console.log(text);
+        
+        if(response.ok) {
+          alert("게시글이 등록되었습니다.");
+          // 목록으로 이동
+          location.href = "/board";
+        }
+        else {
+          alert("게시글 등록에 실패했습니다.")
+        }
+    } catch (error) {
+        alert(error.message);
+    }
+});
+</script>
+</body>
+</html>
