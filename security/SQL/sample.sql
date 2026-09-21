@@ -16,11 +16,11 @@ VALUES
     (UUID(), 'aloha', 'ROLE_USER');
 
 -- 관리자 계정
-INSERT INTO `user` (id, username, password, name, email)
+INSERT INTO `user` (id, username, password, name, email, enabled)
 VALUES (UUID(), 'admin', '$2a$10$PMkZ5OE8AxstxMJi1RSHtu.Z4W2m7ZGSPTiruR1navWluw9hk6/Pq', 
-        '관리자', 'admin@naver.com');
+        '관리자', 'admin@naver.com', 1);
 
-INSERT INTO `user_auth` (id, username, auth )
+INSERT INTO `user_auth` (id, user_no, auth )
 VALUES 
-  (UUID(), 'admin', 'ROLE_USER'),
-  (UUID(), 'admin', 'ROLE_ADMIN');
+  (UUID(), (SELECT no FROM user WHERE username = 'admin'), 'ROLE_USER'),
+  (UUID(), (SELECT no FROM user WHERE username = 'admin'), 'ROLE_ADMIN');

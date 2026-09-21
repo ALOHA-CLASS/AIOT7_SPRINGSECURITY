@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 프로젝트</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <h1 class="text-center">게시글 목록</h1>
+          <div class="d-flex justify-content-end">
+            <a href="/board/create" class="btn btn-primary">글쓰기</a>
+          </div>
+          <table class="table table-bordered table-striped table-hover table-responsive mt-3 text-center">
+            <colgroup>
+              <col class="col-1">     <!-- 번호 -->
+              <col class="col-3">     <!-- 제목 -->
+              <col class="col-2">     <!-- 작성자 -->
+              <col class="col-2">     <!-- 등록일자 -->
+              <col class="col-2">     <!-- 수정일자 -->
+            </colgroup>
+            <tr class="table-dark">
+              <th width="150">번호</th>
+              <th width="300">제목</th>
+              <th>작성자</th>
+              <th>등록일자</th>
+              <th>수정일자</th>
+            </tr>
+            <th:block th:if="${ list == null || list.isEmpty() }">
+              <tr>
+                <td colspan="5">조회된 데이터가 없습니다.</td>
+              </tr>
+            </th:block>
+            <th:block th:each="board : ${list}">
+              <tr class="align-middle">
+                <td th:text="${board.no}">번호</td>
+                <td class="text-start">
+                  <!-- <a th:href="|/board/${board.id}|" th:text="${board.title}">제목</a> -->
+                  <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">제목</a>
+                </td>
+                <td th:text="${board.user.name}">작성자</td>
+                <td>
+                  <span th:text="${ #dates.format( board.createdAt, 'yyyy-MM-dd HH:mm:ss' ) }">
+                    등록일자
+                  </span>
+                </td>
+                <td>
+                  <span th:text="${ #dates.format( board.updatedAt, 'yyyy-MM-dd HH:mm:ss' ) }">
+                    수정일자
+                  </span>
+                </td>
+              </tr>
+            </th:block>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

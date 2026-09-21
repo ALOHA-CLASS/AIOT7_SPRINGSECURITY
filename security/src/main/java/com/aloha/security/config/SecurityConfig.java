@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
+import com.aloha.security.handler.CustomAccessDeniedHandler;
+import com.aloha.security.handler.LoginFailureHandler;
+import com.aloha.security.handler.LoginSuccessHandler;
+import com.aloha.security.handler.LogoutSuccessHandler;
 import com.aloha.security.service.UserDetailServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -25,11 +30,16 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration 
 @EnableWebSecurity      // ⭐ 스프링 시큐리티 설정 빈으로 등록
 @RequiredArgsConstructor 
+// @Secured / @PreAuthorize / @PostAuthroize 어노테이션으로 메서드 권한 제어 활성화
+@EnableMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig {
 
-  private final PasswordEncoder passwordEncoder;
   private final DataSource dataSource;
   private final UserDetailServiceImpl userDetailServiceImpl;
+  private final LoginSuccessHandler loginSuccessHandler;
+  private final LoginFailureHandler loginFailureHandler;
+  private final LogoutSuccessHandler logoutSuccessHandler;
+  private final CustomAccessDeniedHandler customAccessDeniedHandler;
   
   /**
    * 스프링 시큐리티 설정
@@ -52,10 +62,27 @@ public class SecurityConfig {
     
     // 🔐 폼 로그인 설정
     http.formLogin(login -> login
-      .loginPage("/login")                // 커스텀 로그인 페이지 경로
-      .loginProcessingUrl("/login")       // 로그인 처리 요청 경로
-      .defaultSuccessUrl("/?login=true")  // 로그인 성공 시 이동할 경로
-      .failureUrl("/login?error=true")    // 로그인 실패 시 이동할 경로
+      .loginPage("/login")                      // 커스텀 로그인 페이지 경로
+      .loginProcessingUrl("/login")             // 로그인 처리 요청 경로
+      //.defaultSuccessUrl("/?login=true")      // 로그인 성공 시 이동할 경로
+      //.failureUrl("/login?error=true")        // 로그인 실패 시 이동할 경로
+      .successHandler(loginSuccessHandler)      // 로그인 성공 핸들러 설정
+      .failureHandler(loginFailureHandler)      // 로그인 실패 핸들러 설정
+    );
+
+    // 🔓 로그아웃 설정
+    http.logout(logout -> logout
+                          .logoutUrl("/logout")                       // 로그아웃 요청 경로
+                          //.logoutSuccessUrl("/login?logout=true")   // 로그아웃 성공 시 이동할 경로
+                          .invalidateHttpSession(true)                // 세션 초기화
+                          .deleteCookies("remember-id")               // 로그아웃 시, 쿠키 삭제(아이디 저장)
+                          .logoutSuccessHandler(logoutSuccessHandler) // 로그아웃 성공 핸들러 설정
+                );
+    
+    // 🚫 접근 거부 예외 처리
+    http.exceptionHandling(exception -> exception
+                            //.accessDeniedPage("/exception")                   // 접근 거부 시 이동할 경로
+                            .accessDeniedHandler(customAccessDeniedHandler)   // 접근 거부 핸들러 설정
     );
 
     // 🔄 자동 로그인 설정

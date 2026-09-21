@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.aloha.security.domain.Users;
 import com.aloha.security.dto.CustomUser;
 import com.aloha.security.service.UserService;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -132,9 +134,21 @@ public class HomeController {
    * @return
    */
   @GetMapping("/login")
-  public String login() {
+  public String login(
+    @CookieValue(value = "remember-id", required = false) Cookie cookie,
+    Model model
+  ) {
     log.info("::::: 로그인 화면 :::::");
-    
+    String username = "";
+    boolean rememberId = false;
+    if( cookie != null ) {
+      log.info("쿠키이름 : {}", cookie.getName());
+      log.info("쿠키값 : {}", cookie.getValue());
+      username = cookie.getValue();
+      rememberId = true;
+    }
+    model.addAttribute("username", username);
+    model.addAttribute("rememberId", rememberId);
 
     return "login";
   }  

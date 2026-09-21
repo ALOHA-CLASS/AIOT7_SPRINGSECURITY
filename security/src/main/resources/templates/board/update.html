@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSRF TOKEN -->
+  <meta name="_csrf" th:content="${_csrf.token}" />
+  <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+  <title>게시판 프로젝트</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-6">
+          <h1 class="text-center">게시글 수정</h1>
+          <form id="form" action="/board" method="post" th:object="${board}">
+            <input type="hidden" th:field="*{id}">
+            <div class="mb-3">
+              <label for="" class="form-label">제목</label>
+              <input type="text" class="form-control" th:field="*{title}"
+                    aria-describedby="helpTitle" placeholder="제목을 입력해주세요"
+                    required
+                      />
+            </div>
+            <div class="mb-3">
+              <label for="" class="form-label">작성자</label>
+              <input type="text" class="form-control" th:value="${board.user.name}"
+                      aria-describedby="helpWriter" readonly
+                      />
+            </div>
+            <div class="mb-3">
+              <label for="" class="form-label">내용</label>
+              <textarea class="form-control" th:field="*{content}" rows="5"></textarea>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-center mt-2">
+              <button type="submit" class="btn btn-primary w-100">수정</button>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-center mt-2">
+              <button type="button" class="btn btn-outline-primary w-100" onclick="moveList()">목록</button>
+              <button type="button" class="btn btn-outline-danger w-100" onclick="actionDelete()">삭제</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+ <script>
+		const form = document.getElementById("form");
+    const csrfHeader = document.querySelector("meta[name='_csrf_header']").getAttribute("content")
+    const csrfToken = document.querySelector("meta[name='_csrf']").getAttribute("content")
+		
+		form.addEventListener("submit", async (e) => {
+		  e.preventDefault(); // 기본 submit 막기
+		
+		  const data = {
+		    id: document.getElementById("id").value,
+		    title: document.getElementById("title").value,
+		    content: document.getElementById("content").value
+		  };
+		
+		  try {
+		    const response = await fetch("/board", {
+		      method: "PUT", // 또는 POST
+		      headers: {
+		        "Content-Type": "application/json",
+            [csrfHeader] : csrfToken
+		      },
+		      body: JSON.stringify(data)
+		    });
+		
+		    console.log(response);
+        // response.ok : 응답상태 성공(true), 실패(false) 여부
+        console.log("ok : " + response.ok);
+        
+        // 응답 본문의 데이터를 텍스트로 변환
+        const text = await response.text()
+        console.log(text);
+        
+        if(response.ok) {
+          alert("게시글이 수정되었습니다.");
+          // 목록으로 이동
+          location.href = "/board";
+        }
+        else {
+          alert("게시글 수정에 실패했습니다.")
+        }
+		
+		  } catch (err) {
+		    alert(err.message);
+		  }
+		});
+		
+		async function actionDelete() {
+		  if (!confirm("정말로 삭제하시겠습니까?")) return;
+		
+		  const id = document.getElementById("id").value;
+		
+		  try {
+		    const response = await fetch(`/board/${id}`, {
+		      method: "DELETE",
+          headers: {
+            [csrfHeader] : csrfToken
+		      },
+		    });
+		
+		    if (response.ok) {
+          alert("게시글이 삭제되었습니다.");
+          location.href = "/board";
+        } else {
+          alert("게시글 삭제에 실패하였습니다.")
+        }
+		
+		  } catch (err) {
+		    alert(err.message);
+		  }
+		}
+		
+		function moveList() {
+	  location.href = "/board";
+	}
+</script>
+
+</body>
+</html>

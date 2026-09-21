@@ -21,7 +21,7 @@
 
         <div class="form-floating">
           <input type="text" class="form-control" id="username" name="username" placeholder="아이디"
-                autofocus >
+                autofocus th:value="${username}">
           <label for="username">아이디</label>
         </div>
         <div class="form-floating">
@@ -31,7 +31,8 @@
 
         <div class="form-check text-start my-3 d-flex justify-content-around">
           <div class="item">
-            <input type="checkbox" class="form-check-input" name="remember-id" id="remember-id-check">
+            <input type="checkbox" class="form-check-input" name="remember-id" id="remember-id-check"
+                   th:checked="${rememberId}">
             <label for="remember-id-check" class="form-check-label">아이디 저장</label>
           </div>
           <div class="item">

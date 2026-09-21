@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 프로젝트</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <main>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-6">
+          <h1 class="text-center">게시글 조회</h1>
+          <form action="/board/create" method="post" th:object="${board}">
+            <div class="mb-3">
+              <label for="" class="form-label">제목</label>
+              <input type="text" class="form-control" th:field="*{title}"
+                    aria-describedby="helpTitle" placeholder="제목을 입력해주세요"
+                    readonly
+                      />
+            </div>
+            <div class="mb-3">
+              <label for="" class="form-label">작성자</label>
+              <input type="text" class="form-control" 
+                      th:value="${board.user.name}"
+                      aria-describedby="helpWriter"
+                      readonly
+                      />
+            </div>
+            <div class="mb-3">
+              <label for="" class="form-label">내용</label>
+              <textarea class="form-control" th:field="*{content}" rows="5" readonly></textarea>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-center">
+              <button type="button" class="btn btn-outline-primary w-100" onclick="moveList()">목록</button>
+              <!-- 👮‍♀️관리자 👩‍🏫 작성자 검증 -->
+              <th:block th:if="${ #authorization.expression('hasRole(''ADMIN'')') or @BoardService.isOwner( board.id, #authentication.principal.user.no ) }">      
+                <button type="button" class="btn btn-primary w-100" onclick="moveUpdate()">수정</button>
+              </th:block>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // 👩‍💻 모델 객체를 자바스크립트로 가져오는 방법
+    let id = '[[${board.id}]]'
+    
+    // 목록 화면 이동
+    function moveList() {
+      location.href = '/board'
+    }
+    
+    // 수정 화면 이동
+    function moveUpdate() {
+      location.href = `/board/update/${id}`
+    }
+  </script>
+</body>
+</html>
