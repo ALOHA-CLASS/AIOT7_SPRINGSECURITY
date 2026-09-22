@@ -1,0 +1,49 @@
+<th:block th:fragment="header">
+  <!-- 상단 알림바 -->
+  <div class="topbar">
+      <div class="inner">
+          <span class="notice">🎉 <b>ALOHA STORE</b> 신규 회원 5,000원 쿠폰 증정!</span>
+          <ul class="top-menu">
+              <li sec:authorize="isAnonymous()"><a th:href="@{/users/login}">로그인</a></li>
+              <li sec:authorize="isAnonymous()"><a th:href="@{/users/join}">회원가입</a></li>
+              <li sec:authorize="isAuthenticated()">
+                  <span sec:authentication="principal.name">사용자</span>님
+              </li>
+              <li sec:authorize="isAuthenticated()"><a th:href="@{/users/mypage}">마이페이지</a></li>
+              <li sec:authorize="isAuthenticated()">
+                  <form th:action="@{/users/logout}" method="post" class="logout-form">
+                      <button type="submit">로그아웃</button>
+                  </form>
+              </li>
+          </ul>
+      </div>
+  </div>
+
+  <!-- 헤더 -->
+  <header id="header">
+    <div class="inner">
+      <h1 class="logo"><a th:href="@{/}">ALOHA<b>STORE</b></a></h1>
+      <nav class="gnb">
+        <ul>
+            <li><a th:href="@{/}">HOME</a></li>
+            <li><a th:href="@{/products}">SHOP</a></li>
+            <li><a th:href="@{/products(category='의류')}">의류</a></li>
+            <li><a th:href="@{/products(category='가방')}">가방</a></li>
+            <li><a th:href="@{/products(category='액세서리')}">액세서리</a></li>
+        </ul>
+      </nav>
+      <div class="util">
+        <form class="search" th:action="@{/products}" method="get">
+          <input type="text" name="keyword" placeholder="상품 검색">
+          <button type="submit">🔍</button>
+        </form>
+        <a class="ico cart" th:href="@{/cart}" sec:authorize="isAuthenticated()">
+            🛒<span class="count" th:text="${cartCount}">0</span>
+        </a>
+        <a class="ico" th:href="@{/orders}" sec:authorize="isAuthenticated()">📦</a>
+      </div>
+    </div>
+  </header>
+
+
+</th:block>

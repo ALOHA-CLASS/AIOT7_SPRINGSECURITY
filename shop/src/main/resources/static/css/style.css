@@ -1,0 +1,136 @@
+@charset "utf-8";
+
+:root {
+    --point: #ff3e5f;      /* 포인트 레드 */
+    --dark: #111;
+    --gray: #888;
+    --line: #eee;
+    --bg: #f8f8f8;
+}
+
+.inner { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.center { text-align: center; margin-top: 30px; }
+
+/* ===== 버튼 ===== */
+.btn-fill {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 26px; border-radius: 100px;
+    background: var(--point); color: #fff; font-weight: 700; font-size: 15px;
+    transition: 0.25s;
+}
+.btn-fill:hover { background: #111; }
+.btn-fill.big { padding: 15px 40px; font-size: 16px; }
+.btn-fill.danger { background: #d33; }
+.btn-line {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 30px; border: 1px solid #111; border-radius: 100px;
+    font-weight: 700; font-size: 15px; transition: 0.25s;
+}
+.btn-line:hover { background: #111; color: #fff; }
+.btn-mini {
+    display: inline-block; padding: 6px 14px; border-radius: 6px;
+    background: #f1f1f1; font-size: 13px; font-weight: 600; transition: 0.2s;
+}
+.btn-mini:hover { background: #111; color: #fff; }
+.btn-mini.danger { background: #ffe9ec; color: #d33; }
+.btn-mini.danger:hover { background: #d33; color: #fff; }
+.btn-row { display: flex; gap: 10px; align-items: center; }
+
+
+/* ===== 라벨/타이틀 ===== */
+.sec-label { display: inline-block; margin-bottom: 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.2em; color: var(--point); }
+.sec-title { font-size: 32px; font-weight: 300; }
+.sec-title b { font-weight: 800; }
+.sec-head { text-align: center; margin-bottom: 40px; }
+.sub-title { font-size: 18px; font-weight: 700; margin: 24px 0 14px; padding-bottom: 10px; border-bottom: 2px solid #111; }
+
+
+/* ===== 상단바 ===== */
+.topbar { background: #111; color: rgba(255,255,255,0.75); font-size: 13px; }
+.topbar .inner { display: flex; align-items: center; justify-content: space-between; height: 38px; }
+.topbar .notice b { color: #fff; }
+.top-menu { display: flex; align-items: center; gap: 18px; }
+.top-menu a:hover { color: #fff; }
+.logout-form button { color: rgba(255,255,255,0.75); font-size: 13px; }
+.logout-form button:hover { color: #fff; }
+
+/* ===== 헤더 ===== */
+#header { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid var(--line); }
+#header .inner { display: flex; align-items: center; height: 74px; }
+.logo a, .logo { font-size: 22px; font-weight: 300; letter-spacing: 0.02em; }
+.logo b { font-weight: 800; color: var(--point); }
+.gnb { margin-left: 44px; }
+.gnb ul { display: flex; }
+.gnb a { display: block; padding: 0 18px; line-height: 74px; font-size: 15px; font-weight: 700; transition: 0.2s; }
+.gnb a:hover { color: var(--point); }
+.util { display: flex; align-items: center; gap: 14px; margin-left: auto; }
+.search { position: relative; }
+.search input { width: 220px; padding: 10px 40px 10px 16px; border: 1px solid var(--line); border-radius: 100px; background: var(--bg); font-size: 14px; outline: 0; transition: 0.2s; }
+.search input:focus { background: #fff; border-color: #111; }
+.search button { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
+.util .ico { position: relative; font-size: 20px; }
+.util .cart .count { position: absolute; top: -8px; right: -10px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--point); color: #fff; font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
+
+/* ===== 비주얼 ===== */
+.visual { display: flex; align-items: center; min-height: 340px; margin-bottom: 70px; padding: 50px; border-radius: 20px; background: linear-gradient(120deg, #fff0f3, #ffe3e8); }
+.visual-title { font-size: 44px; font-weight: 300; margin: 10px 0 14px; }
+.visual-title b { font-weight: 800; color: var(--point); }
+.visual-desc { color: #555; font-size: 17px; margin-bottom: 26px; }
+
+/* ===== 섹션 ===== */
+.section { margin-bottom: 70px; }
+
+/* ===== 푸터 ===== */
+#footer { border-top: 1px solid var(--line); background: #fafafa; padding: 40px 0; }
+#footer .foot-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+#footer .logo { font-size: 20px; }
+.foot-menu { display: flex; gap: 20px; }
+.foot-menu a { font-size: 14px; color: #555; }
+.foot-menu a:hover { color: var(--point); }
+.copyright { font-size: 13px; color: var(--gray); }
+
+
+/* ===== 폼(공통) ===== */
+.form .field { margin-bottom: 16px; }
+.form label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600; }
+.form input { width: 100%; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); font-size: 15px; transition: 0.2s; }
+.form input:focus { background: #fff; border-color: #111; outline: 0; }
+.form .btn-fill { width: 100%; margin-top: 10px; }
+.form .check { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 14px; }
+.err { display: block; margin-top: 5px; color: #d33; font-size: 13px; }
+.err.center { text-align: center; margin: 14px 0; }
+.flash { padding: 12px 16px; margin-bottom: 20px; border-radius: 8px; background: #eafaef; color: #218838; font-size: 14px; text-align: center; }
+
+
+
+/* ===== 회원가입/로그인 박스 ===== */
+.auth-box { max-width: 440px; margin: 50px auto; padding: 36px; border: 1px solid var(--line); border-radius: 16px; }
+.auth-title { font-size: 24px; text-align: center; margin-bottom: 26px; }
+.auth-link { margin-top: 20px; text-align: center; font-size: 14px; color: var(--gray); }
+.auth-link a { color: var(--point); font-weight: 700; }
+.auth-hint { margin-top: 16px; text-align: center; font-size: 13px; color: var(--gray); }
+.readonly { margin-bottom: 18px; font-size: 14px; color: var(--gray); }
+.readonly b { color: #111; }
+
+
+/* ===== 상품 그리드 ===== */
+.product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
+.product-card { transition: 0.25s; }
+.product-card:hover { transform: translateY(-4px);}
+.product-card .thumb { 
+    position: relative; aspect-ratio: 1/1; overflow: hidden; border-radius: 12px; background: var(--bg);
+}
+.product-card .thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+.product-card:hover .thumb img { transform: scale(1.06); }
+.product-card .info { padding: 14px 4px; }
+.product-card .cate { font-size: 12px; color: var(--point); font-weight: 700; }
+.product-card .name { 
+    margin: 4px 0 8px; font-size: 15px; font-weight: 600; overflow: hidden; 
+    text-overflow: ellipsis; white-space: nowrap;
+}
+.product-card .price { font-size: 15px; }
+.product-card .price b { font-size: 18px; font-weight: 800; }
+
+
+
+

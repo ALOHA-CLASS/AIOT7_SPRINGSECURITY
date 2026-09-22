@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title layout:title-pattern="$CONTENT_TITLE | ALOHA STORE">ALOHA STORE</title>
+
+  <!-- ========== 공통 CSS ========== -->
+  <th:block th:replace="~{fragments/link :: link}"></th:block>
+</head>
+<body>
+  <!-- ========== 헤더 ========== -->
+  <th:block th:replace="~{fragments/header :: header}"></th:block>
+  
+  <!-- ========== 본문 ========== -->
+  <main class="main">
+    <div class="inner" layout:fragment="content">
+      <!-- 각 페이지 내용 -->
+    </div>
+  </main>
+  
+  <!-- ========== 푸터 ========== -->
+  <th:block th:replace="~{fragments/footer :: footer}"></th:block>
+  
+  <!-- ========== 공통 JS ========== -->
+  <th:block th:replace="~{fragments/script :: script}"></th:block>
+</body>
+</html>
