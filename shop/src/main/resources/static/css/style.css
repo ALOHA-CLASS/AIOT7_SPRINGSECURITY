@@ -112,7 +112,6 @@
 .readonly { margin-bottom: 18px; font-size: 14px; color: var(--gray); }
 .readonly b { color: #111; }
 
-
 /* ===== 상품 그리드 ===== */
 .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px; }
 .product-card { transition: 0.25s; }
@@ -132,5 +131,18 @@
 .product-card .price b { font-size: 18px; font-weight: 800; }
 
 
+/* ===== 페이징 ===== */
+.paging { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 36px 0; }
+.pg-btn, .pg-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 38px; height: 38px; padding: 0 12px; border: 1px solid var(--line);
+    border-radius: 8px; font-size: 14px; font-weight: 600; transition: 0.2s;
+}
+.pg-nums { display: flex; gap: 6px; }
+.pg-num.on { background: var(--point); border: var(--point); color: #fff; }
+.pg-btn:hover { border-color: #111; }
+.pg-btn.disabled { opacity: 0.4; pointer-events: none; }
 
+
+/* ===== 본문 ===== */
 

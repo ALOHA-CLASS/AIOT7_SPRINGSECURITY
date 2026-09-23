@@ -2,6 +2,8 @@ package com.aloha.shop.service.shop;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.aloha.shop.domain.shop.Product;
@@ -18,6 +20,11 @@ public class ProductServiceImpl implements ProductService {
   @Override
   public List<Product> list() {
     return productRepository.findAll();
+  }
+
+  @Override
+  public Page<Product> list(Pageable pageable) {
+    return productRepository.page(pageable);
   }
 
   
