@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title th:text="${product.name}">상품 상세</title>
+</head>
+<body layout:fragment="content">
+  
+  <div class="detail">
+    <!-- 상품 이미지 영역 -->
+    <div class="detail-thumb">
+      <img th:src="${product.imageUrl}" th:alt="${product.name}">
+    </div>
+    
+    <!-- 상품 정보 영역 -->
+    <div class="detail-info">
+      <span class="cate" th:text="${product.category}">카테고리</span>
+      <h2 class="detail-name" th:text="${product.name}">상품명</h2>
+      <p class="detail-price">
+        <b th:text="${ #numbers.formatInteger(product.price, 0, 'COMMA') }">0</b>원
+      </p>
+      <p class="detail-desc" th:text="${product.description}"></p>
+      <p class="detail-stock">
+        재고 : <span th:text="${product.stock}">0</span>개
+      </p>
+
+      <!-- 장바구니/주문하기 -->
+      <div sec:authorize="isAuthenticated()">
+        <form th:action="@{/cart/add}" method="post" class="buy-form">
+          <input type="hidden" name="productNo" th:value="${product.no}">
+          <label>수량
+            <input type="number" name="quantity" value="1" min="1" th:max="${product.stock}">
+          </label>
+          <button type="submit" class="btn-fill big">장바구니</button>
+          <button type="submit" class="btn-fill big"
+                  formmethod="get" th:formaction="@{/orders/checkout/direct}"
+                >주문하기
+          </button>
+        </form>
+      </div>
+      <div sec:authorize="isAnonymous()">
+        <a th:href="@{/users/login}" class="btn-line">로그인</a>
+      </div>
+
+      <a th:href="@{/products}" class="line-back">목록</a>
+    </div>
+
+  </div>
+</body>
+</html>

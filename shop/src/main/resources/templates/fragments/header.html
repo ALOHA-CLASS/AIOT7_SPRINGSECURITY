@@ -34,7 +34,7 @@
       </nav>
       <div class="util">
         <form class="search" th:action="@{/products}" method="get">
-          <input type="text" name="keyword" placeholder="상품 검색">
+          <input type="text" name="keyword" placeholder="상품 검색" th:value="${param.keyword}">
           <button type="submit">🔍</button>
         </form>
         <a class="ico cart" th:href="@{/cart}" sec:authorize="isAuthenticated()">

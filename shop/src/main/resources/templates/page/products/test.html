@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
+  <title>fetch 비동기 연습</title>
+
+</head>
+<body>
+  <h1>상품 REST API - Fetch(AJAX) 실습</h1>
+
+  <section>
+    <h2>전체 상품 조회</h2>
+
+    <button onclick="list()">상품 목록</button>
+  </section>
+
+  <section>
+    <h2>상품 상세 조회</h2>
+    <input type="text" id="productId" placeholder="상품ID">
+    <button onclick="get()">상품 조회</button>
+  </section>
+
+
+  <section>
+    <h2>상품 등록</h2>
+
+    <input type="text" id="createName" placeholder="상품명"> <br>
+    <input type="text" id="createPrice" placeholder="가격"> <br>
+    <input type="text" id="createStock" placeholder="재고"> <br>
+    <input type="text" id="createCategory" placeholder="카테고리"> <br>
+    <input type="text" id="createImageUrl" placeholder="이미지url"> <br>
+    <input type="text" id="createDescription" placeholder="상품설명"> <br>
+
+    <button onclick="create()">상품 등록</button>
+  </section>
+
+
+  <section>
+    <h2>상품 수정</h2>
+
+    <input type="text" id="updateId" placeholder="상품ID"> <br>
+    <input type="text" id="updateName" placeholder="상품명"> <br>
+    <input type="text" id="updatePrice" placeholder="가격"> <br>
+    <input type="text" id="updateStock" placeholder="재고"> <br>
+    <input type="text" id="updateCategory" placeholder="카테고리"> <br>
+    <input type="text" id="updateImageUrl" placeholder="이미지url"> <br>
+    <input type="text" id="updateDescription" placeholder="상품설명"> <br>
+
+    <button onclick="update()">상품 수정</button>
+  </section>
+
+  <section>
+    <h2>응답 결과</h2>
+
+    <pre id="result">
+여기에 서버 응답 출력!
+    </pre>
+  </section>
+
+
+  <!-- JS -->
+  <script>
+    // CSRF 토큰
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content
+
+    function list() {
+      // 비동기 함수 fetch      
+      const url = '/api/products'
+      fetch(url)                            // url 에 GET 요청
+        .then(response => response.json())  // JSON 문자열 ➡ JS 객체
+        .then(data => {
+          console.log(data);
+          printResult(data);
+        })
+    }
+
+    function printResult(data) {
+      const $result = document.querySelector("#result")
+      // JSON.stringify(값, 변환할데이터 선택, 들여쓰기 칸수) : JS 객체 ➡ JSON 문자열
+      $result.textContent = JSON.stringify(data, null, 2)
+    }
+
+    // 상품 상세 조회
+    function get() {
+      const id = document.getElementById("productId").value
+
+      fetch(`/api/products/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          printResult(data);
+        })
+        .catch(error => {
+          console.error(error);
+        })
+    }
+
+    // 상품 등록
+    function create() {
+      const name = document.getElementById("createName").value
+      const price = document.getElementById("createPrice").value
+      const stock = document.getElementById("createStock").value
+      const category = document.getElementById("createCategory").value
+      const imageUrl = document.getElementById("createImageUrl").value
+      const description = document.getElementById("createDescription").value
+
+      const data = {
+        name : name,
+        price : price,
+        stock : stock,
+        category : category,
+        imageUrl : imageUrl,
+        description : description
+      }
+      // CSRF 토큰 추가✨
+      const option = {
+        method: 'POST',
+        headers: {
+          'Content-Type' : 'application/json',
+          [csrfHeader] : csrfToken
+        },
+        body: JSON.stringify(data)    // JS 객체 ➡ JSON 문자열
+      }
+
+      fetch('/api/products', option)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          printResult(data);
+        })
+
+    }
+
+
+    // 상품 수정
+    function update() {
+      const id = document.getElementById("updateId").value
+      const name = document.getElementById("updateName").value
+      const price = document.getElementById("updatePrice").value
+      const stock = document.getElementById("updateStock").value
+      const category = document.getElementById("updateCategory").value
+      const imageUrl = document.getElementById("updateImageUrl").value
+      const description = document.getElementById("updateDescription").value
+
+      const data = {
+        id : id,
+        name : name,
+        price : price,
+        stock : stock,
+        category : category,
+        imageUrl : imageUrl,
+        description : description
+      }
+      // CSRF 토큰 추가✨
+      const option = {
+        method: 'PUT',
+        headers: {
+          'Content-Type' : 'application/json',
+          [csrfHeader] : csrfToken
+        },
+        body: JSON.stringify(data)    // JS 객체 ➡ JSON 문자열
+      }
+
+      fetch('/api/products', option)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          printResult(data);
+        })
+
+    }
+  </script>
+</body>
+</html>

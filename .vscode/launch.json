@@ -29,6 +29,16 @@
       "projectName": "security-layout",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-ShopApplication<shop>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.aloha.shop.ShopApplication",
+      "projectName": "shop",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
