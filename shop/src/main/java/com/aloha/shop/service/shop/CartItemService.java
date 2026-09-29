@@ -20,5 +20,17 @@ public interface CartItemService {
 
   // 총 주문 금액
   int totalPrice(Long userNo);
+
+  // 장바구니 상세 - id
+  CartItem select(String id);
+
+  // 장바구니 등록
+  CartItem create(CartItem cartItem);
+
+  // 장바구니 수정
+  CartItem update(CartItem cartItem);
+
+  // 장바구니 삭제
+  void delete(String id);
   
 }

@@ -25,7 +25,7 @@ import com.aloha.shop.domain.shop.CartItem;
  * countByUserNo()
  * → SELECT COUNT(*) FROM cart_item WHERE user_no = ?
  */
-public interface CartItemRepository extends JpaRepository<CartItem, Long> {
+public interface CartItemRepository extends JpaRepository<CartItem, Long>, CartItemRepositoryCustom {
   
   // 장바구니 목록 - 페이징
   Page<CartItem> findByUserNo(Long userNo, Pageable pageable);

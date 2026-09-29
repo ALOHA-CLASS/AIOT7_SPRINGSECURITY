@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSRF -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>CartItem Fetch 비동기 연습</title>
+</head>
+<body>
+    <h1>장바구니 REST API - Fetch(AJAX) 실습</h1>
+    <!-- ============================= -->
+    <!-- 장바구니 목록 조회 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 목록 조회</h2>
+      <input type="text" id="listUserNo" placeholder="회원번호" th:value="${#authentication.principal.user.no}">
+      <button onclick="list()">
+        장바구니 목록
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 상세 조회 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 상세 조회</h2>
+      <input type="text" id="cartId" placeholder="장바구니ID">
+      <button onclick="get()">
+        장바구니 조회
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 등록 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 등록</h2>
+      <input type="text" id="createUserNo" placeholder="회원번호" th:value="${#authentication.principal.user.no}">
+      <br>
+      <input type="text" id="createProductNo" placeholder="상품번호">
+      <br>
+      <input type="text" id="createQuantity" placeholder="수량">
+      <br>
+      <button onclick="create()">
+        장바구니 등록
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 수정 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 수정</h2>
+      <input type="text" id="updateId" placeholder="장바구니ID">
+      <br>
+      <input type="text" id="updateQuantity" placeholder="수량">
+      <br>
+      <button onclick="update()">
+        장바구니 수정
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 삭제 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 삭제</h2>
+      <input type="text" id="deleteId" placeholder="장바구니ID">
+      <button onclick="remove()">
+        장바구니 삭제
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 응답 결과 -->
+    <!-- ============================= -->
+    <section>
+      <h2>응답 결과</h2>
+      <pre id="result">
+  여기에 서버 응답 출력!
+      </pre>
+  </section>
+    <!-- ============================= -->
+    <!-- JS -->
+    <!-- ============================= -->
+    <!-- 공통 $fetch 함수 -->
+    <script src="/js/fetch.js"></script>
+    <script>
+    // ==========================================
+    // 결과 출력
+    // ==========================================
+    function printResult(data) {
+      const $result = document.querySelector("#result")
+      // JS 객체 ➡ JSON 문자열
+      $result.textContent =
+        JSON.stringify(data, null, 2)
+    }
+    // ==========================================
+    // 장바구니 목록 조회
+    // GET /api/cart?userNo=1
+    // ==========================================
+    function list() {
+      const userNo = document.getElementById("listUserNo").value
+      $fetch({
+        url: `/api/cart?userNo=${userNo}`,
+        method: 'GET',
+        success: data => printResult(data),
+        error: error => console.error(error)
+      })
+    }
+    // ==========================================
+    // 장바구니 상세 조회
+    // GET /api/cart/{id}
+    // ==========================================
+    function get() {
+      const id = document.getElementById("cartId").value
+      $fetch({
+        url: `/api/cart/${id}`,
+        method: 'GET',
+        success: data => printResult(data),
+        error: error => console.error(error)
+      })
+    }
+    // ==========================================
+    // 장바구니 등록
+    // POST /api/cart
+    // ==========================================
+    function create() {
+      const userNo = document.getElementById("createUserNo").value
+      const productNo = document.getElementById("createProductNo").value
+      const quantity = document.getElementById("createQuantity").value
+      // 서버로 전송할 데이터
+      const data = {
+        user: {
+          no: Number(userNo)
+        },
+        product: {
+          no: Number(productNo)
+        },
+        quantity: Number(quantity)
+      }
+      $fetch({
+        url: '/api/cart',
+        method: 'POST',
+        data: data,
+        success: data => printResult(data),
+        error: error => console.error(error)
+      })
+    }
+    // ==========================================
+    // 장바구니 수정
+    // PUT /api/cart
+    // ==========================================
+    function update() {
+      const id = document.getElementById("updateId").value
+      const quantity = document.getElementById("updateQuantity").value
+      const data = {
+        id: id,
+        quantity: Number(quantity)
+      }
+      $fetch({
+        url: '/api/cart',
+        method: 'PUT',
+        data: data,
+        success: data => printResult(data),
+        error: error => console.error(error)
+      })
+    }
+    // ==========================================
+    // 장바구니 삭제
+    // DELETE /api/cart/{id}
+    // ==========================================
+    function remove() {
+      const id = document.getElementById("deleteId").value
+      $fetch({
+        url: `/api/cart/${id}`,
+        method: 'DELETE',
+        success: data => printResult(data),
+        error: error => console.error(error)
+      })
+    }
+  </script>
+</body>
+</html>

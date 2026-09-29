@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.aloha.shop.domain.shop.CartItem;
 import com.aloha.shop.repository.shop.CartItemRepository;
@@ -48,6 +49,33 @@ public class CartItemServiceImpl implements CartItemService {
                           .sum();
     return totalPrice;
   }
+
+  @Override
+  public CartItem select(String id) {
+    return cartItemRepository.findById(id);
+  }
+
+  @Override
+  public CartItem create(CartItem cartItem) {
+    return cartItemRepository.save(cartItem);
+  }
+
+  @Override
+  @Transactional 
+  public CartItem update(CartItem cartItem) {
+    // 장바구니 수량 변경
+    CartItem old = cartItemRepository.findById(cartItem.getId());
+    old.setQuantity(cartItem.getQuantity());
+    return old;
+  }
+
+  @Override
+  @Transactional 
+  public void delete(String id) {
+    cartItemRepository.deleteById(id);
+  }
+
+  
 
 
   

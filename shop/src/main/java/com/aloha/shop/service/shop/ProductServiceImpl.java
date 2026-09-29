@@ -41,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public Product create(Product product) {
-    return productRepository.save(product);
+    return productRepository.save(product); // insert
   }
 
   @Override
@@ -56,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
     old.setStock(product.getStock());
     // ⭐ @Transactional 안에서는 엔터티 변경감지를 하기 때문에
     // save() 메소드 호출하지 않아도 자동으로 UPDATE
-    // return productRepository.save(product);
+    // return productRepository.save(product);    // update
     return old;
   }
 

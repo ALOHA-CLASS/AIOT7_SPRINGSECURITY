@@ -66,6 +66,17 @@ public class CartController {
     // 뷰 지정
     return "page/cart/list";
   }
+
+  @GetMapping("/test")
+  public String test() {
+    return "page/cart/test";
+  }
+
+  @GetMapping("/test2")
+  public String test2() {
+    return "page/cart/test2";
+  }
+  
   
   
 }

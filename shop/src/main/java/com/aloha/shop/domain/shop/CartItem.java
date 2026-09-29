@@ -1,5 +1,8 @@
 package com.aloha.shop.domain.shop;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.aloha.shop.domain.BaseEntity;
 import com.aloha.shop.domain.users.User;
 
@@ -32,9 +35,11 @@ public class CartItem extends BaseEntity {
   // N:1 = CartItem : Product
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_no", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)  // 외래키 ON DELETE CASCADE 옵션 설정
   private Product product;
 
   @Builder.Default
   @Column(nullable = false)
   private int quantity = 1;             // 수량
+  
 }

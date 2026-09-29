@@ -1,6 +1,7 @@
 package com.aloha.shop.domain.users;
 
 import com.aloha.shop.domain.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +34,7 @@ public class UserAuth extends BaseEntity {
   // 회원 권한 : 회원 = N : 1
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_no")
+  @JsonIgnore               // ⭐ JSON 데이터 변환 시 무시
   private User user;
 
   
