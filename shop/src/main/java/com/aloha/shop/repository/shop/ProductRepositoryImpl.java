@@ -99,5 +99,15 @@ public class ProductRepositoryImpl implements ProductRepositoryCustom {
                         .fetchOne();
     return result;
   }
+
+  @Override
+  public void deleteById(String id) {
+    QProduct product = QProduct.product;
+
+    queryFactory.delete(product)
+                .where(product.id.eq(id))
+                .execute();
+    
+  }
   
 }

@@ -39,6 +39,12 @@ public interface ProductRepositoryCustom {
   Product findById(String id);
 
 
+  /**
+   * DELETE FROM product
+   * WHERE id = ?
+   * @param id
+   */
+  void deleteById(String id);
   
 
   

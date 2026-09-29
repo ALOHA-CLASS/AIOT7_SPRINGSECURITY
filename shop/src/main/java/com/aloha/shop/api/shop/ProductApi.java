@@ -71,9 +71,12 @@ public class ProductApi {
   @DeleteMapping("/{id}")
   public ResponseEntity<?> destroy(@PathVariable("id") String id) {
       try {
+          log.info("id : {}", id);
           productService.delete(id);
           return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
       } catch (Exception e) {
+          log.error("error : {}", e);
+          e.printStackTrace();
           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
   }

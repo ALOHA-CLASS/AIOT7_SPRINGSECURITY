@@ -52,6 +52,16 @@
     <button onclick="update()">상품 수정</button>
   </section>
 
+
+  <section>
+    <h2>상품 삭제</h2>
+    <input type="text" id="deleteId" placeholder="상품ID">
+    <button onclick="remove()">상품 삭제</button>
+
+  </section>
+
+
+
   <section>
     <h2>응답 결과</h2>
 
@@ -170,6 +180,28 @@
         .then(data => {
           console.log(data);
           printResult(data);
+        })
+
+    }
+
+
+    // 상품 삭제
+    function remove() {
+      const id = document.getElementById("deleteId").value
+
+      // CSRF 토큰 추가✨
+      const option = {
+        method: 'DELETE',
+        headers: {
+          [csrfHeader] : csrfToken
+        }
+      }
+
+      fetch(`/api/products/${id}`, option)
+        .then(response => response.text())
+        .then(data => {
+          console.log(data);
+          // printResult(data);
         })
 
     }
