@@ -31,17 +31,26 @@
         </td>
         <td th:text="${ #numbers.formatInteger(item.product.price, 0, 'COMMA') } + '원'">0원</td>
         <td>
-          <form th:action="|/cart/${id}/update|" method="post"
-               class="qty-form js-qty-form" th:data-no="${item.no}">
+          <form th:action="|/cart/${id}/update|" method="post" class="qty-form js-qty-form" th:data-no="${item.no}">
             <input type="number" name="quantity" th:value="${item.quantity}" min="1">
-            <button type="submit" class="btn-mini">변경</button>
+            <button type="button" class="btn-mini"
+                    th:data-id="${item.id}"
+                    onclick="updateCart(this)"
+                    >
+                    변경
+            </button>
           </form>
         </td>
         <td class="item-total">
           <th:block th:text="${ #numbers.formatInteger(item.product.price * item.quantity, 0, 'COMMA') } + '원' ">0원</th:block>
         </td>
         <td>
-          <button type="submit" class="btn-mini danger">삭제</button>
+          <button type="button" class="btn-mini danger" 
+                  th:data-id="${item.id}"
+                  onclick="deleteCart(this)"
+                  >
+                  삭제
+          </button>
         </td>
       </tr>
     </tbody>
@@ -118,5 +127,100 @@
     <a th:href="@{/orders/checkout}" class="btn-fill big">주문하기</a>
   </div>
 
+
+  <script>
+    // 장바구니 수량 변경
+    async function updateCart(button) {
+
+      // 장바구니 ID
+      const id = $(button).data("id")     // data-id 속성값
+      // 수량 
+      const quantity = $(button).prev("input").val()
+
+      console.log(`cart id : ${id}`);
+      console.log(`quantity : ${quantity}`);
+
+      const data = {
+        id: id,
+        quantity: quantity
+      }
+
+      try {
+        // 장바구니 수량 변경 요청
+        const result = await $ajax({
+          url: "/api/cart",
+          method: "PUT",
+          data: data
+        })
+
+        if( result.status >= 400 ) throw new Error(result.message)
+
+        // 성공
+        await $toast_({
+          title: "수량을 변경하였습니다.",
+          icon: "success"
+        })
+
+        // 새로고침
+        location.reload()
+
+      } catch (error) {
+        console.error(error);
+        // 실패
+        $toast({
+          title: "수량을 변경에 실패하였습니다",
+          icon: "error"
+        })
+      }
+    }
+
+    // 장바구니 삭제
+    async function deleteCart(button) {
+      const id = $(button).data("id")
+
+      console.log(`id : ${id}`);
+
+      try {
+        // 삭제 여부 확인
+        const result = await $confirm({
+          title: "장바구니에서 삭제하시겠습니까?",
+          text: "삭제한 상품은 복구할 수 없습니까?",
+          icon: "warning",
+          confirmButtonText: "삭제",
+          cancelButtonText: "취소"
+        })
+        // 취소
+        if(!result.isConfirmed) {
+          return
+        }
+        // 삭제 요청
+        const result2 = await $ajax({
+          url: `/api/cart/${id}`,
+          method: "DELETE"
+        })
+
+        console.log(result2);
+        if(result2 != 'SUCCESS') {
+          throw new Error(result.message)
+        }
+        
+
+        // 삭제 성공
+        await $toast_({
+          title: "장바구니에서 삭제되었습니다.",
+        })
+
+        // 새로고침
+        location.reload()
+      } catch (error) {
+        console.error(error);
+        // 삭제 실패
+        await $toast({
+          title: "삭제에 실패했습니다.",
+          icon: "error"
+        })
+      }
+    }
+  </script>
 </body>
 </html>

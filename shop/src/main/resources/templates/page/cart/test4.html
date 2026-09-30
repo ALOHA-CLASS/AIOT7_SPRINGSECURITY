@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSRF -->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
+    <title>CartItem jQuery 비동기 연습</title>
+</head>
+<body>
+    <h1>장바구니 REST API - jQuery(AJAX) 실습</h1>
+    <!-- ============================= -->
+    <!-- 장바구니 목록 조회 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 목록 조회</h2>
+      <input type="text" id="listUserNo" placeholder="회원번호" th:value="${#authentication.principal.user.no}">
+      <button onclick="list()">
+        장바구니 목록
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 상세 조회 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 상세 조회</h2>
+      <input type="text" id="cartId" placeholder="장바구니ID">
+      <button onclick="get()">
+        장바구니 조회
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 등록 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 등록</h2>
+      <input type="text" id="createUserNo" placeholder="회원번호" th:value="${#authentication.principal.user.no}">
+      <br>
+      <input type="text" id="createProductNo" placeholder="상품번호">
+      <br>
+      <input type="text" id="createQuantity" placeholder="수량">
+      <br>
+      <button onclick="create()">
+        장바구니 등록
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 수정 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 수정</h2>
+      <input type="text" id="updateId" placeholder="장바구니ID">
+      <br>
+      <input type="text" id="updateQuantity" placeholder="수량">
+      <br>
+      <button onclick="update()">
+        장바구니 수정
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 장바구니 삭제 -->
+    <!-- ============================= -->
+    <section>
+      <h2>장바구니 삭제</h2>
+      <input type="text" id="deleteId" placeholder="장바구니ID">
+      <button onclick="remove()">
+        장바구니 삭제
+      </button>
+  </section>
+    <!-- ============================= -->
+    <!-- 응답 결과 -->
+    <!-- ============================= -->
+    <section>
+      <h2>응답 결과</h2>
+      <pre id="result">
+  여기에 서버 응답 출력!
+      </pre>
+  </section>
+
+
+  <!-- ============================= -->
+  <!-- JS -->
+  <!-- ============================= -->
+  <!-- jQuery --> 
+  <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script src="/js/ajax.js"></script>
+  <script src="/js/alert.js"></script>
+  <script>
+    // ==========================================
+    // CSRF 토큰
+    // ==========================================
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content
+    // ==========================================
+    // 결과 출력
+    // ==========================================
+    function printResult(data) {
+      const $result = document.querySelector("#result")
+      // JSON.stringify(
+      //   값,
+      //   변환할 데이터 선택,
+      //   들여쓰기 칸수
+      // )
+      //
+      // JS 객체 ➡ JSON 문자열
+      $result.textContent =
+        JSON.stringify(data, null, 2)
+    }
+    // ==========================================
+    // 장바구니 목록 조회
+    // GET /api/cart
+    // ==========================================
+    function list() {
+      // GET 요청
+      $ajax({
+        url: "/api/cart",
+        method: "GET",
+        success: function(data) {
+          console.log(data);
+          printResult(data);
+          $toast({
+            title: "장바구니 목록 조회하였습니다!"
+          })
+        }, 
+        error: function(error) {
+          console.log(error);
+          printResult(error);
+          $toast({
+            title: "장바구니 목록 조회 실패!",
+            icon: "error"
+          })
+        }
+      })
+    }
+    // ==========================================
+    // 장바구니 상세 조회
+    // GET /api/cart/{id}
+    // ==========================================
+    function get() {
+      const id = $("#cartId").val()
+      
+      $ajax({
+        url: `/api/cart/${id}`,
+        method: "GET",
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+          $toast({
+            title: "장바구니 항목 조회하였습니다!"
+          })
+        },
+        error: function(error) {
+          console.error(error);
+           $toast({
+            title: "장바구니 조회 실패!",
+            icon: "error"
+          })
+        }
+      })
+    }
+    // ==========================================
+    // 장바구니 등록
+    // POST /api/cart
+    // ==========================================
+    function create() {
+      const userNo = $("#createUserNo").val()
+      const productNo = $("#createProductNo").val()
+      const quantity = $("#createQuantity").val()
+      // 서버로 전송할 데이터
+      const data = {
+        user: {
+          no: Number(userNo)
+        },
+        product: {
+          no: Number(productNo)
+        },
+        quantity: Number(quantity)
+      }
+      // POST
+      $ajax({
+        url: "/api/cart",
+        method: "POST",
+        data: data,
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+          $alert({
+            title: "장바구니 추가 성공!", 
+            text: "장바구니 추가에 성공하였습니다.",
+            icon: "success"
+          })
+        },
+        error: function(error) {
+          console.log(error)
+          $alert({
+            title: "장바구니 추가 실패!", 
+            text: "장바구니 추가에 실패하였습니다.",
+            icon: "error"
+          })
+        }
+      })
+    }
+    // ==========================================
+    // 장바구니 수정
+    // PUT /api/cart
+    // ==========================================
+    function update() {
+      const id = $("#updateId").val()
+      const quantity = $("#updateQuantity").val()
+      const data = {
+        id: id,
+        quantity: Number(quantity)
+      }
+      // PUT 
+      $ajax({
+        url: "/api/cart",
+        method: "PUT",
+        data: data,
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+          $alert({
+            title: "장바구니 수정 성공!", 
+            text: "장바구니 수정에 성공하였습니다.",
+            icon: "success"
+          })
+        },
+        error: function(error) {
+          console.log(error)
+          $alert({
+            title: "장바구니 수정 실패!", 
+            text: "장바구니 수정에 실패하였습니다.",
+            icon: "error"
+          })
+        }
+      })
+    }
+    // ==========================================
+    // 장바구니 삭제
+    // DELETE /api/cart/{id}
+    // ==========================================
+    function remove() {
+      const id = $("#deleteId").val()
+
+      // 정말로 삭제하시겠습니까? 
+      $confirm(
+        "장바구니 삭제",
+        "정말로 삭제하시겠습니까?",
+        "info",
+        "삭제",
+        "취소",
+        "hotpink",
+        "#ccc"
+      ).then((result) => {
+        // 확인 버튼 클릭!
+        if (result.isConfirmed) {
+          // DELETE
+          $ajax({
+            url: `/api/cart/${id}`,
+            method: "DELETE",
+            success: function(data) {
+              console.log(data)
+              printResult(data)
+              $toast({
+                title: "장바구니 항목을 삭제하였습니다.",
+              })
+            },
+            error: function(error) {
+              console.error(error);
+              $toast({
+                title: "장바구니 항목 삭제 실패!",
+                icon: "error"
+              })
+            }
+          })
+        }
+        // 취소 버튼 클릭!
+        else if (result.isDismissed) 
+          $toast({
+            title: "삭제를 취소하였습니다.",
+            icon: "info"
+          })
+        // 거부 버튼 클릭!
+        else if (result.isDenied) 
+          Swal.fire("거부!", "", "info");
+      });
+
+      
+    }
+  </script>
+</body>
+</html>

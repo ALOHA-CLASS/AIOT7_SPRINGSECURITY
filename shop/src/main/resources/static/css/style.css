@@ -207,5 +207,23 @@
 .cart-summary .total b { font-size: 24px; font-weight: 800; color: var(--point); margin-left: 8px; }
 
 
+/* ===== 마이페이지 ===== */
+.mypage-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+}
+.mp-card {
+    display: block; padding: 30px 24px; 
+    border: 1px solid var(--line); border-radius: 16px;
+    text-align: center; transition: 0.25s;
+}
+.mp-card:hover { border-color: var(--point); transform: translateY(-4px); }
+.mp-card .mp-ico { font-size: 34px; }
+.mp-card h3 { margin: 14px 0; font-size: 17px; }
+.mp-card p { font-size: 13px; color: var(--gray) }
+.mp-card.logout button { width: 100%; }
+
+
+
+
 /* =====  ===== */
 

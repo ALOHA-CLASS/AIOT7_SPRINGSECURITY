@@ -29,11 +29,11 @@
       <!-- 장바구니/주문하기 -->
       <div sec:authorize="isAuthenticated()">
         <form th:action="@{/cart/add}" method="post" class="buy-form">
-          <input type="hidden" name="productNo" th:value="${product.no}">
+          <input type="hidden" name="productNo" id="productNo" th:value="${product.no}">
           <label>수량
-            <input type="number" name="quantity" value="1" min="1" th:max="${product.stock}">
+            <input type="number" name="quantity" id="quantity" value="1" min="1" th:max="${product.stock}">
           </label>
-          <button type="submit" class="btn-fill big">장바구니</button>
+          <button type="button" class="btn-fill big" onclick="addCart()">장바구니</button>
           <button type="submit" class="btn-fill big"
                   formmethod="get" th:formaction="@{/orders/checkout/direct}"
                 >주문하기
@@ -48,5 +48,70 @@
     </div>
 
   </div>
+
+  <script>
+    // 장바구니 추가
+    async function addCart() {
+
+      const productNo = $("#productNo").val()
+      const quantity = $("#quantity").val()
+
+      console.log(`productNo : ${productNo}`);
+      console.log(`quantity : ${quantity}`);
+
+      const data = {
+        product: { no: Number(productNo) },
+        quantity: Number(quantity)
+      }
+
+      try {
+        // 장바구니 추가
+        const result = await $ajax({
+                              url: "/api/cart",
+                              method: "POST",
+                              data: data
+                            })
+  
+        console.log(result);
+
+        // 400, 500 에러 발생 시
+        if( result.status >= 400 ) {
+          throw new Error(result.message)
+        }
+  
+        // 장바구니 추가 성공 후, 액션
+        const confirm = await $confirm({
+          title: "장바구니 추가",
+          text: "상품을 장바구니에 추가하였습니다!",
+          icon: "success",
+          confirmButtonText: "장바구니로 이동",
+          cancelButtonText: "쇼핑 계속하기",
+          confirmButtonColor: "#ccc",
+          cancelButtonColor: "royalblue"
+        })
+  
+        // 장바구니 이동 클릭
+        if( confirm.isConfirmed ) {
+          location.href = "/cart"
+        }
+  
+        // 쇼핑 계속하기
+        if( confirm.isDismissed ) {
+          return
+        }
+
+      } catch (error) {
+        console.error(error);
+        $alert({
+          title: "장바구니 추가",
+          text: "장바구니 추가에 실패하였습니다.",
+          icon: "error"
+        })
+        
+      }
+      
+      
+    }
+  </script>
 </body>
 </html>

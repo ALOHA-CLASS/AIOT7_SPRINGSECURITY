@@ -6,10 +6,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSRF -->
+  <meta name="_csrf" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:content="${_csrf.headerName}">
   <title layout:title-pattern="$CONTENT_TITLE | ALOHA STORE">ALOHA STORE</title>
 
   <!-- ========== 공통 CSS ========== -->
   <th:block th:replace="~{fragments/link :: link}"></th:block>
+
+  <!-- ========== 공통 JS ========== -->
+  <th:block th:replace="~{fragments/script :: script}"></th:block>
 </head>
 <body>
   <!-- ========== 헤더 ========== -->
@@ -25,7 +31,5 @@
   <!-- ========== 푸터 ========== -->
   <th:block th:replace="~{fragments/footer :: footer}"></th:block>
   
-  <!-- ========== 공통 JS ========== -->
-  <th:block th:replace="~{fragments/script :: script}"></th:block>
 </body>
 </html>

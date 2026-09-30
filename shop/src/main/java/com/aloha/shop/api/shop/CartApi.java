@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aloha.shop.domain.shop.CartItem;
+import com.aloha.shop.domain.users.User;
 import com.aloha.shop.security.CustomUser;
 import com.aloha.shop.service.shop.CartItemService;
 
@@ -55,13 +56,24 @@ public class CartApi {
   }
   
   @PostMapping()
-  public ResponseEntity<?> create(@RequestBody CartItem cartItem) {
+  public ResponseEntity<?> create(
+    @RequestBody CartItem cartItem,
+    @AuthenticationPrincipal CustomUser loginUser
+  ) {
       try {
+          // 로그인된 사용자 정보의 no 가져오기
+          Long userNo = loginUser.getUser().getNo();
+          if( cartItem.getUser() == null || cartItem.getUser().getNo() == null ) {
+            User user = new User();
+            user.setNo(userNo);
+            cartItem.setUser(user);
+          }
           log.info("productNo : {}", cartItem.getProduct().getNo());
           log.info("userNo : {}", cartItem.getUser().getNo());
           CartItem newCartItem = cartItemService.create(cartItem);
           return new ResponseEntity<>(newCartItem, HttpStatus.OK);
       } catch (Exception e) {
+          e.printStackTrace();
           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
   }

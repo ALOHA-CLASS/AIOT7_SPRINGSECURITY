@@ -67,14 +67,28 @@ public class CartController {
     return "page/cart/list";
   }
 
+  // fetch 
   @GetMapping("/test")
   public String test() {
     return "page/cart/test";
   }
 
+  // $fetch 공통함수
   @GetMapping("/test2")
   public String test2() {
     return "page/cart/test2";
+  }
+
+  // jQuery - ajax
+  @GetMapping("/test3")
+  public String test3() {
+    return "page/cart/test3";
+  }
+
+  // jQuery - $ajax 공통함수
+  @GetMapping("/test4")
+  public String test4() {
+    return "page/cart/test4";
   }
   
   

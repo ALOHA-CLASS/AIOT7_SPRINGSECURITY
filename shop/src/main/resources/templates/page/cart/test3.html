@@ -6,10 +6,10 @@
     <!-- CSRF -->
     <meta name="_csrf" th:content="${_csrf.token}">
     <meta name="_csrf_header" th:content="${_csrf.headerName}">
-    <title>CartItem Fetch 비동기 연습</title>
+    <title>CartItem jQuery 비동기 연습</title>
 </head>
 <body>
-    <h1>장바구니 REST API - Fetch(AJAX) 실습</h1>
+    <h1>장바구니 REST API - jQuery(AJAX) 실습</h1>
     <!-- ============================= -->
     <!-- 장바구니 목록 조회 -->
     <!-- ============================= -->
@@ -77,17 +77,30 @@
   여기에 서버 응답 출력!
       </pre>
   </section>
-    <!-- ============================= -->
-    <!-- JS -->
-    <!-- ============================= -->
-    <!-- 공통 $fetch 함수 -->
-    <script src="/js/fetch.js"></script>
-    <script>
+
+
+  <!-- ============================= -->
+  <!-- JS -->
+  <!-- ============================= -->
+  <!-- jQuery --> 
+  <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+  <script>
+    // ==========================================
+    // CSRF 토큰
+    // ==========================================
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content
     // ==========================================
     // 결과 출력
     // ==========================================
     function printResult(data) {
       const $result = document.querySelector("#result")
+      // JSON.stringify(
+      //   값,
+      //   변환할 데이터 선택,
+      //   들여쓰기 칸수
+      // )
+      //
       // JS 객체 ➡ JSON 문자열
       $result.textContent =
         JSON.stringify(data, null, 2)
@@ -97,13 +110,20 @@
     // GET /api/cart
     // ==========================================
     function list() {
-      // const userNo = document.getElementById("listUserNo").value
-      // 서버에 비동기 요청
-      $fetch({
-        url: `/api/cart`,                       // 요청 주소
-        method: 'GET',                          // 요청 메소드
-        success: data => printResult(data),     // 요청 성공 콜백 함수
-        error: error => console.error(error)    // 요청 실패 콜백 함수
+      const userNo = $("#listUserNo").val()
+
+      const url = `/api/cart`
+      // GET 요청
+      $.ajax({
+        url: "/api/cart",
+        method: "GET",
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+        },
+        error: function(error) {
+          console.error(error);
+        }
       })
     }
     // ==========================================
@@ -111,23 +131,28 @@
     // GET /api/cart/{id}
     // ==========================================
     function get() {
-      const id = document.getElementById("cartId").value
-      $fetch({
-        url: `/api/cart/${id}`,                 // 요청 주소
-        method: 'GET',                          // 요청 메소드
-        success: data => printResult(data),     // 요청 성공 콜백 함수
-        error: error => console.error(error)    // 요청 실패 콜백 함수
+      const id = $("#cartId").val()
+      
+      $.ajax({
+        url: `/api/cart/${id}`,
+        method: "GET",
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+        },
+        error: function(error) {
+          console.error(error);
+        }
       })
-
     }
     // ==========================================
     // 장바구니 등록
     // POST /api/cart
     // ==========================================
     function create() {
-      const userNo = document.getElementById("createUserNo").value
-      const productNo = document.getElementById("createProductNo").value
-      const quantity = document.getElementById("createQuantity").value
+      const userNo = $("#createUserNo").val()
+      const productNo = $("#createProductNo").val()
+      const quantity = $("#createQuantity").val()
       // 서버로 전송할 데이터
       const data = {
         user: {
@@ -138,12 +163,22 @@
         },
         quantity: Number(quantity)
       }
-      $fetch({
-        url: '/api/cart',
-        method: 'POST',
-        data: data,
-        success: data => printResult(data),
-        error: error => console.error(error)
+      // POST
+      $.ajax({
+        url: "/api/cart",
+        method: "POST",
+        headers: {
+          [csrfHeader]: csrfToken
+        },
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+        },
+        error: function(error) {
+          console.log(error)
+        }
       })
     }
     // ==========================================
@@ -151,18 +186,28 @@
     // PUT /api/cart
     // ==========================================
     function update() {
-      const id = document.getElementById("updateId").value
-      const quantity = document.getElementById("updateQuantity").value
+      const id = $("#updateId").val()
+      const quantity = $("#updateQuantity").val()
       const data = {
         id: id,
         quantity: Number(quantity)
       }
-      $fetch({
-        url: '/api/cart',
-        method: 'PUT',
-        data: data,
-        success: data => printResult(data),
-        error: error => console.error(error)
+      // PUT 
+      $.ajax({
+        url: "/api/cart",
+        method: "PUT",
+        headers: {
+          [csrfHeader]: csrfToken
+        },
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+        },
+        error: function(error) {
+          console.log(error)
+        }
       })
     }
     // ==========================================
@@ -170,12 +215,21 @@
     // DELETE /api/cart/{id}
     // ==========================================
     function remove() {
-      const id = document.getElementById("deleteId").value
-      $fetch({
+      const id = $("#deleteId").val()
+      // DELETE
+      $.ajax({
         url: `/api/cart/${id}`,
-        method: 'DELETE',
-        success: data => printResult(data),
-        error: error => console.error(error)
+        method: "DELETE",
+        headers: {
+          [csrfHeader]: csrfToken
+        },
+        success: function(data) {
+          console.log(data)
+          printResult(data)
+        },
+        error: function(error) {
+          console.error(error);
+        }
       })
     }
   </script>
