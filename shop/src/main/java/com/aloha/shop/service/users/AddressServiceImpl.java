@@ -88,7 +88,7 @@ public class AddressServiceImpl implements AddressService {
 
     // 배송지 소유자 인지
     // - 배송지의 userNo 랑 요청한 회원 no 랑 일치하지 않으면 소유자가 아님
-    boolean check = !address.getUser().getName().equals(userNo);
+    boolean check = !address.getUser().getNo().equals(userNo);
     if( check ) {
       throw new IllegalArgumentException("본인의 배송지가 아닙니다.");
     }

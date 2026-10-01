@@ -26,7 +26,10 @@
           <span th:text="${address.address2}">상세주소</span>
         </p>
       </div>
-      <button type="button" class="btn-mini danger">삭제</button>
+      <button type="button" class="btn-mini danger" th:if="${!address.defaultAddress}"
+              th:data-id="${address.id}" onclick="deleteAddress(this)">
+        삭제
+      </button>
     </li>
   </ul>
 
@@ -35,7 +38,33 @@
   </div>  
 
  
+  <script>
+    // 배송지 삭제
+    async function deleteAddress(button) {
+      const id = $(button).data("id")
 
+      const result = await $confirm({
+        title: "배송지를 삭제하시겠습니까?",
+        text: "삭제한 배송지는 복구할 수 없습니다.",
+        icon: "warning",
+        confirmButtonText: "삭제",
+        cancelButtonText: "취소"
+      })
+      if( !result.isConfirmed ) return
+
+      try {
+        const response = await $ajax({
+                                  url: `/api/address/${id}`,
+                                  method: "DELETE"
+                                })
+        await $toast_({ title: "배송지가 삭제되었습니다." })                                  
+        location.reload()
+      } catch (error) {
+        console.error(error);
+        await $toast({ title: "배송지 삭제에 실패했습니다.", icon: "error" })
+      }
+    }
+  </script>
 
 </body>
 </html>

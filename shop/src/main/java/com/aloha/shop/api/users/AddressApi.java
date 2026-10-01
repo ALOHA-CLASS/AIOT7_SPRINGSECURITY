@@ -99,6 +99,7 @@ public class AddressApi {
           addressService.delete(userNo, addressNo);
           return new ResponseEntity<>("SUCCESS", HttpStatus.OK);
       } catch (Exception e) {
+          e.printStackTrace();
           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
   }
