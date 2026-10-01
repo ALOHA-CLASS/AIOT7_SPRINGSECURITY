@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>회원 정보 수정</title>
+</head>
+<body layout:fragment="content">
+  <div class="page-head">
+    <h2 class="page-title">회원정보 수정</h2>
+  </div>
+
+  
+  <div class="auth-box">
+    <p class="flash" th:if="${message}" th:text="${message}"></p>
+    
+    <p class="readonly">아이디 : <b th:text="${user.username}">아이디</b></p>
+    
+    <form id="form" th:action="@{/users/mypage/info}" th:object="${updateDto}" method="post" class="form">
+      <div class="field">
+        <label for="name">이름</label>
+        <input type="text" th:field="*{name}">
+        <span class="err" th:errors="*{name}"></span>
+      </div>
+      <div class="field">
+        <label for="email">이메일</label>
+        <input type="text" th:field="*{email}">
+        <span class="err" th:errors="*{email}"></span>
+      </div>
+      <div class="field">
+        <label for="phone">연락처</label>
+        <input type="text" th:field="*{phone}">
+        <span class="err" th:errors="*{phone}"></span>
+      </div>
+      <button type="submit" class="btn-fill big">저장하기</button>
+    </form>
+    
+    <p class="auth-link">
+      <a th:href="@{/users/mypage}">마이페이지</a>
+    </p>
+  </div>
+
+
+</body>
+</html>

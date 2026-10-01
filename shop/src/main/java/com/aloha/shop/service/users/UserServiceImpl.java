@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloha.shop.domain.users.User;
 import com.aloha.shop.dto.users.UserJoinDto;
+import com.aloha.shop.dto.users.UserUpdateDto;
 import com.aloha.shop.repository.users.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,25 @@ public class UserServiceImpl implements UserService {
     // 기본 사용자 권한 추가
     user.addAuth("ROLE_USER");
     // 회원 정보 등록
+    return userRepository.save(user);
+  }
+
+  @Override
+  public User select(String username) {
+    User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+    return user;
+  }
+
+  @Override
+  @Transactional 
+  public User update(String username, UserUpdateDto dto) {
+    User user = select(username);
+    user.setName(dto.getName());
+    user.setEmail(dto.getEmail());
+    user.setPhone(dto.getPhone());
+    
     return userRepository.save(user);
   }
 

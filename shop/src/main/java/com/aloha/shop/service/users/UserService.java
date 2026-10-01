@@ -2,6 +2,7 @@ package com.aloha.shop.service.users;
 
 import com.aloha.shop.domain.users.User;
 import com.aloha.shop.dto.users.UserJoinDto;
+import com.aloha.shop.dto.users.UserUpdateDto;
 
 public interface UserService {
 
@@ -10,6 +11,12 @@ public interface UserService {
 
   // 회원 가입
   User join(UserJoinDto dto);
+
+  // 회원 조회
+  User select(String username);
+
+  // 회원 수정
+  User update(String username, UserUpdateDto dto);
 
   
 }
