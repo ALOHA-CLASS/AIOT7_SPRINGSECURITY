@@ -114,5 +114,16 @@ public class AddressServiceImpl implements AddressService {
       }
     }
   }
+
+  @Override
+  public Address select(Long userNo, String id) {
+
+    Address address = addressRepository.findById(id);
+    Long addressNo = address.getNo();
+
+    address = getOwned(userNo, addressNo);
+
+    return address;
+  }
   
 }

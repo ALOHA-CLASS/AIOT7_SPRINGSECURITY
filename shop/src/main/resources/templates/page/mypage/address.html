@@ -30,70 +30,11 @@
     </li>
   </ul>
 
-  <!-- 배송지 등록 -->
-  <div class="auth-box">
-    <p class="flash" th:if="${message}" th:text="${message}"></p>
+  <div class="center">
+    <a class="btn-fill big" th:href="@{/users/mypage/address/add}">새 배송지 추가</a>
+  </div>  
 
-    <h3 class="sub-title">새 배송지 추가</h3>
-    <form th:action="@{/users/mypage/address}" th:object="${addressDto}" method="post" class="form">
-      <div class="field">
-        <label for="name">배송지명</label>
-        <input type="text" th:field="*{name}">
-        <span class="err" th:field="*{name}"></span>
-      </div>
-      <div class="field">
-        <label for="receiver">받는 사람</label>
-        <input type="text" th:field="*{receiver}">
-        <span class="err" th:field="*{receiver}"></span>
-      </div>
-      <div class="field">
-        <label for="phone">연락처</label>
-        <input type="text" th:field="*{phone}">
-        <span class="err" th:field="*{phone}"></span>
-      </div>
-      <div class="field">
-        <label for="zipcode">우편번호</label>
-        <input type="text" th:field="*{zipcode}">
-        <span class="err" th:field="*{zipcode}"></span>
-        <button type="button" class="btn-mini" onclick="searchAddress()">주소 찾기</button>
-      </div>
-      <div class="field">
-        <label for="address1">기본주소</label>
-        <input type="text" th:field="*{address1}">
-        <span class="err" th:field="*{address1}"></span>
-      </div>
-      <div class="field">
-        <label for="address2">상세주소</label>
-        <input type="text" th:field="*{address2}">
-        <span class="err" th:field="*{address2}"></span>
-      </div>
-      <label class="check">
-        <input type="checkbox" th:field="*{defaultAddress}"> 
-        <span>기본 배송지</span>
-      </label>
-      <button type="submit" class="btn-fill big">배송지 추가</button>
-    </form>
-  </div>
-
-
-  <!-- 주소 API -->
-  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-  <script>
-    function searchAddress() {
-      new daum.Postcode({
-         // 주소 검색 완료 시
-         oncomplete: function(data) {
-          // 사용자가 선택한 주소 타입에 맞춰 기본 주소를 구성
-          const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-
-          $("#zipcode").val(data.zonecode)
-          $("#address1").val(addr)
-          $("#address2").focus()
-         }
-      }).open();
-    }
-  </script>
-
+ 
 
 
 </body>

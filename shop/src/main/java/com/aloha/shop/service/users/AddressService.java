@@ -10,6 +10,9 @@ public interface AddressService {
   // 회원 배송지 목록
   List<Address> list(Long userNo);
 
+  // 배송지 조회
+  Address select(Long userNo, String id);
+
   // 배송지 등록
   Address add(Long userNo, AddressDto dto);
   

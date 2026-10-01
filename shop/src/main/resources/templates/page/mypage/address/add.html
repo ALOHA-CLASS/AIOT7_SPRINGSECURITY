@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title></title>
+</head>
+<body layout:fragment="content">
+  <!-- 배송지 등록 -->
+  <div class="auth-box">
+    <p class="flash" th:if="${message}" th:text="${message}"></p>
+
+    <h3 class="sub-title">새 배송지 추가</h3>
+    <form th:action="@{/users/mypage/address}" th:object="${addressDto}" method="post" class="form">
+      <div class="field">
+        <label for="name">배송지명</label>
+        <input type="text" th:field="*{name}">
+        <span class="err" th:field="*{name}"></span>
+      </div>
+      <div class="field">
+        <label for="receiver">받는 사람</label>
+        <input type="text" th:field="*{receiver}">
+        <span class="err" th:field="*{receiver}"></span>
+      </div>
+      <div class="field">
+        <label for="phone">연락처</label>
+        <input type="text" th:field="*{phone}">
+        <span class="err" th:field="*{phone}"></span>
+      </div>
+      <div class="field">
+        <label for="zipcode">우편번호</label>
+        <input type="text" th:field="*{zipcode}">
+        <span class="err" th:field="*{zipcode}"></span>
+        <button type="button" class="btn-mini" onclick="searchAddress()">주소 찾기</button>
+      </div>
+      <div class="field">
+        <label for="address1">기본주소</label>
+        <input type="text" th:field="*{address1}">
+        <span class="err" th:field="*{address1}"></span>
+      </div>
+      <div class="field">
+        <label for="address2">상세주소</label>
+        <input type="text" th:field="*{address2}">
+        <span class="err" th:field="*{address2}"></span>
+      </div>
+      <label class="check">
+        <input type="checkbox" th:field="*{defaultAddress}"> 
+        <span>기본 배송지</span>
+      </label>
+      <button type="button" class="btn-fill big" onclick="submitAddress()">배송지 추가</button>
+      <a th:href="@{/users/mypage/address}" class="btn-line w-100 my-5">배송지 목록</a>
+    </form>
+  </div>
+
+
+  <!-- 주소 API -->
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script>
+    // 주소 검색
+    function searchAddress() {
+      new daum.Postcode({
+         // 주소 검색 완료 시
+         oncomplete: function(data) {
+          // 사용자가 선택한 주소 타입에 맞춰 기본 주소를 구성
+          const addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+
+          $("#zipcode").val(data.zonecode)
+          $("#address1").val(addr)
+          $("#address2").focus()
+         }
+      }).open();
+    }
+
+
+    // 배송지 추가
+    async function submitAddress() {
+      const data = {
+        name: $("#name").val(),
+        receiver: $("#receiver").val(),
+        phone: $("#phone").val(),
+        zipcode: $("#zipcode").val(),
+        address1: $("#address1").val(),
+        address2: $("#address2").val(),
+        defaultAddress: $("#defaultAddress").is(":checked")
+      }
+
+      // 유효성 검사
+      if(!data.name) return $toast({title: "배송지명을 입력하세요.", icon: "warning"})
+      if(!data.receiver) return $toast({title: "받는 분을 입력하세요.", icon: "warning"})
+      if(!data.address1) return $toast({title: "기본주소를 입력하세요.", icon: "warning"})
+
+      // 배송지 등록 요청
+      try {
+        const response = await $ajax({
+          url: "/api/address",
+          method: "POST",
+          data: data
+        })
+        if( response.status >= 400 ) throw new Error(response.message)
+
+        await $toast_({title: "배송지가 등록되었습니다.", icon: "success"})
+        location.href = "/users/mypage/address"
+      } catch (error) {
+        console.error(error);
+        await $toast_({title: "배송지 등록에 실패했습니다.", icon: "error"})
+      }
+    }
+  </script>
+
+</body>
+</html>

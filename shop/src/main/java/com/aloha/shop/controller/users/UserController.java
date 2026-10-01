@@ -180,8 +180,17 @@ public class UserController {
     // 배송지 등록
     addressService.add(userNo, addressDto);
     ra.addFlashAttribute("message", "배송지가 추가되었습니다.");
-    return "redirect:/users/mypage/address";
+    return "redirect:/users/mypage/address/add";
   }
+
+  // 배송지 추가 화면
+  @GetMapping("/mypage/address/add")
+  public String addressAdd(
+    @ModelAttribute("addressDto") AddressDto addressDto
+  ) {
+    return "page/mypage/address/add";
+  }
+
   
   
   

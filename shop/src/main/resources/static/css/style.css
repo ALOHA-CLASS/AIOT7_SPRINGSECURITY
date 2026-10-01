@@ -8,8 +8,13 @@
     --bg: #f8f8f8;
 }
 
+/* ===== 공통 스타일 ===== */
 .inner { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 .center { text-align: center; margin-top: 30px; }
+.w-100 { width: 100%; }
+.my-5 { margin: 1.5rem 0; }
+
+
 
 /* ===== 버튼 ===== */
 .btn-fill {

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.aloha.shop.domain.users.Address;
 
-public interface AddressRepository extends JpaRepository<Address, Long> {
+public interface AddressRepository extends JpaRepository<Address, Long>, AddressRepositoryCustom {
 
   /**
    * 기본 배송지 우선으로 정렬하여 회원 배송지 목록 조회
