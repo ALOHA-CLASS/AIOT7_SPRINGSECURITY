@@ -38,7 +38,9 @@ public class AddressServiceImpl implements AddressService {
 
     Address address = Address.builder()
                              .user(user)
+                             .name(dto.getName())
                              .receiver(dto.getReceiver())
+                             .phone(dto.getPhone())
                              .zipcode(dto.getZipcode())
                              .address1(dto.getAddress1())
                              .address2(dto.getAddress2())
@@ -58,6 +60,7 @@ public class AddressServiceImpl implements AddressService {
       clearDefault(userNo);
     }
 
+    address.setName(dto.getName());
     address.setReceiver(dto.getReceiver());
     address.setPhone(dto.getPhone());
     address.setZipcode(dto.getZipcode());

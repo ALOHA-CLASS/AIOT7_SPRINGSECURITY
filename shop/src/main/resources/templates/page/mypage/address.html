@@ -32,6 +32,8 @@
 
   <!-- 배송지 등록 -->
   <div class="auth-box">
+    <p class="flash" th:if="${message}" th:text="${message}"></p>
+
     <h3 class="sub-title">새 배송지 추가</h3>
     <form th:action="@{/users/mypage/address}" th:object="${addressDto}" method="post" class="form">
       <div class="field">

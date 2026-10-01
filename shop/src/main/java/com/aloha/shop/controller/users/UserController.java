@@ -159,6 +159,29 @@ public class UserController {
     return "page/mypage/address";
   }
   
+
+  // 배송지 추가
+  @PostMapping("/mypage/address")
+  public String addAddress(
+    @AuthenticationPrincipal CustomUser loginUser,            // 로그인된 사용자 정보
+    @Valid                                                    // 유효성 검사
+    @ModelAttribute("addressDto") AddressDto addressDto,     // "updateDto" 로 모델이 등록
+    BindingResult bindingResult,                              // 유효성 검사 오류 결과
+    Model model,                                              // View 데이터 전달하는 객체
+    RedirectAttributes ra                                     // 리다이렉트 시 데이터 전달
+  ) {
+    Long userNo = loginUser.getUser().getNo();
+
+    // 배송지 유효성 
+    if( bindingResult.hasErrors() ) {
+      List<Address> addressList = addressService.list(userNo);
+      model.addAttribute("addressList", addressList );
+    }
+    // 배송지 등록
+    addressService.add(userNo, addressDto);
+    ra.addFlashAttribute("message", "배송지가 추가되었습니다.");
+    return "redirect:/users/mypage/address";
+  }
   
   
   
