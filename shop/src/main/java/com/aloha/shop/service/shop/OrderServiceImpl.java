@@ -37,9 +37,9 @@ public class OrderServiceImpl implements OrderService {
   private final UserRepository userRepository;
   private final ProductRepository productRepository;
   private final CartItemRepository cartItemRepository;
-  private final RestClient restClient = RestClient.create();
+  private final RestClient restClient = RestClient.create();      // 다른서버로 요청보내는 객체
 
-  @Value("${tosspayments.secret-key}")
+  @Value("${tosspayments.secret-key}")                            // application.properties 에서 가져옴
   private String tossSecretKey;
 
   private static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
@@ -157,9 +157,9 @@ public class OrderServiceImpl implements OrderService {
   public Orders order(OrderForm orderForm) {
     // 상품번호가 있으면 바로구매, 없으면 장바구니 전체주문
     if (orderForm.getProductNo() != null) {
-      return orderDirect(orderForm);
+      return orderDirect(orderForm);    // 상품상세 -> 바로주문
     }
-    return orderCart(orderForm);
+    return orderCart(orderForm);        // 장바구니 -> 전체주문
   }
 
   @Override
@@ -189,6 +189,7 @@ public class OrderServiceImpl implements OrderService {
     );
 
     try {
+      // toss 로 결제 승인 요청
       restClient.post()
                 .uri(TOSS_CONFIRM_URL)
                 .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedKey)
@@ -202,6 +203,7 @@ public class OrderServiceImpl implements OrderService {
       throw new IllegalStateException("결제 승인에 실패했습니다: " + e.getResponseBodyAsString(), e);
     }
 
+    // 결제 완료 처리
     order.setStatus(OrderStatus.PAID);
     order.setPaymentKey(paymentKey);
     return orderRepository.save(order);
@@ -217,7 +219,7 @@ public class OrderServiceImpl implements OrderService {
   // 주문취소 + 재고복원 공통 처리
   private void cancelInternal(Orders order) {
     if (order.getStatus() == OrderStatus.CANCELED) return;
-    order.setStatus(OrderStatus.CANCELED);
+    order.setStatus(OrderStatus.CANCELED);        
     for (OrderItem item : order.getOrderItems()) {
       Product product = item.getProduct();
       product.setStock(product.getStock() + item.getQuantity());

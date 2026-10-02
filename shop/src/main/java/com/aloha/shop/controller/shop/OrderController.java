@@ -109,7 +109,7 @@ public class OrderController {
     return "page/orders/checkout";
   }
 
-  // 배송지 입력 후 결제 전 주문 생성 (결제창 호출 직전 AJAX 요청)
+  // 주문 생성 (결제창 호출 직전 AJAX 요청)
   @PostMapping
   @ResponseBody
   public Map<String, Object> order(
@@ -117,8 +117,9 @@ public class OrderController {
     @RequestBody OrderForm orderForm
   ) {
     orderForm.setUserNo(loginUser.getUser().getNo());
-    Orders order = orderService.order(orderForm);
+    Orders order = orderService.order(orderForm);     // 주문 생성
 
+    // 주문이름 생성 :  예) 백팩 외 3건
     String firstProductName = order.getOrderItems().get(0).getProductName();
     int itemCount = order.getOrderItems().size();
     String orderName = itemCount > 1 ? firstProductName + " 외 " + (itemCount - 1) + "건" : firstProductName;
@@ -141,14 +142,15 @@ public class OrderController {
     Model model
   ) {
     try {
+      // 결제 승인 요청
       Orders order = orderService.confirmPayment(orderId, paymentKey, amount);
       model.addAttribute("order", order);
-      return "page/orders/success";
+      return "page/orders/success";     // 주문 성공 화면
     } catch (Exception e) {
       log.error("결제 승인 실패", e);
       model.addAttribute("orderId", orderId);
       model.addAttribute("message", e.getMessage());
-      return "page/orders/fail";
+      return "page/orders/fail";        // 주문 실패 화면
     }
   }
 
