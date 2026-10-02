@@ -47,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
   @Override
   @Transactional 
   public Orders orderDirect(OrderForm orderForm) {
-    int quantity = orderForm.getQuantity();
+    int quantity = orderForm.getQuantity() == null ? 1 : orderForm.getQuantity();
     if( quantity < 1 ) quantity = 1;
 
     // 회원

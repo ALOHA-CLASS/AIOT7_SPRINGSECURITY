@@ -176,8 +176,8 @@
               await widgets.requestPayment({
                 orderId: order.orderNo,
                 orderName: order.orderName,
-                successUrl: window.location.origin + "/orders/success",
-                failUrl: window.location.origin + "/orders/fail",
+                successUrl: window.location.origin + "/orders/success",   // 결제 인증 성공 시, 리다이렉트 경로
+                failUrl: window.location.origin + "/orders/fail",         // 결제 인증 실패 시, 리다이렉트 경로
                 customerEmail: order.customerEmail,
                 customerName: order.customerName
               })

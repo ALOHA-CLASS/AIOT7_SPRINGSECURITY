@@ -7,7 +7,7 @@ import lombok.Data;
 public class OrderForm {
   private Long userNo;          // 회원번호
   private Long productNo;       // 상품번호
-  private int quantity;         // 수량
+  private Integer quantity;     // 수량 (장바구니 주문 시에는 미사용, null 가능)
 
   // 배송지 정보 스냅샷
   private String receiver;  
