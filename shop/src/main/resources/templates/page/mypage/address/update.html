@@ -7,12 +7,13 @@
   <title></title>
 </head>
 <body layout:fragment="content">
-  <!-- 배송지 등록 -->
+  <!-- 배송지 수정 -->
   <div class="auth-box">
     <p class="flash" th:if="${message}" th:text="${message}"></p>
 
-    <h3 class="sub-title">새 배송지 추가</h3>
-    <form th:action="@{/users/mypage/address}" th:object="${addressDto}" method="post" class="form">
+    <h3 class="sub-title">배송지 수정</h3>
+    <form th:action="@{/users/mypage/address}" th:object="${address}" method="post" class="form">
+      <input type="hidden" th:field="*{no}">
       <div class="field">
         <label for="name">배송지명</label>
         <input type="text" th:field="*{name}">
@@ -47,10 +48,10 @@
         <span class="err" th:field="*{address2}"></span>
       </div>
       <label class="check">
-        <input type="checkbox" id="defaultAddress" th:checked="${addressDto.defaultAddress}"> 
+        <input type="checkbox" id="defaultAddress" th:checked="${address.defaultAddress}"> 
         <span>기본 배송지</span>
       </label>
-      <button type="button" class="btn-fill big" onclick="submitAddress()">배송지 추가</button>
+      <button type="button" class="btn-fill big" onclick="submitAddress()">배송지 수정</button>
       <a th:href="@{/users/mypage/address}" class="btn-line w-100 my-5">배송지 목록</a>
     </form>
   </div>
@@ -75,9 +76,10 @@
     }
 
 
-    // 배송지 추가
+    // 배송지 수정
     async function submitAddress() {
       const data = {
+        no: $("#no").val(),
         name: $("#name").val(),
         receiver: $("#receiver").val(),
         phone: $("#phone").val(),
@@ -86,26 +88,27 @@
         address2: $("#address2").val(),
         defaultAddress: $("#defaultAddress").prop("checked")
       }
+      console.log(data.defaultAddress);
 
       // 유효성 검사
       if(!data.name) return $toast({title: "배송지명을 입력하세요.", icon: "warning"})
       if(!data.receiver) return $toast({title: "받는 분을 입력하세요.", icon: "warning"})
       if(!data.address1) return $toast({title: "기본주소를 입력하세요.", icon: "warning"})
 
-      // 배송지 등록 요청
+      // 배송지 수정 요청
       try {
         const response = await $ajax({
           url: "/api/address",
-          method: "POST",
+          method: "PUT",
           data: data
         })
         if( response.status >= 400 ) throw new Error(response.message)
 
-        await $toast_({title: "배송지가 등록되었습니다.", icon: "success"})
+        await $toast_({title: "배송지가 수정되었습니다.", icon: "success"})
         location.href = "/users/mypage/address"
       } catch (error) {
         console.error(error);
-        await $toast_({title: "배송지 등록에 실패했습니다.", icon: "error"})
+        await $toast_({title: "배송지 수정에 실패했습니다.", icon: "error"})
       }
     }
   </script>

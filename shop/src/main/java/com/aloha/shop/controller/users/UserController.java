@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -190,8 +191,25 @@ public class UserController {
   ) {
     return "page/mypage/address/add";
   }
-
   
+  // 배송지 수정 화면
+  @GetMapping("/mypage/address/update/{id}")
+  public String addressUpdate(
+    @PathVariable("id") String id,
+    @ModelAttribute("addressDto") AddressDto addressDto,
+    @AuthenticationPrincipal CustomUser loginUser,
+    Model model
+  ) {
+    // id 로 배송지 정보 조회
+    Long userNo = loginUser.getUser().getNo();
+    Address address = addressService.select(userNo, id);
+    
+    // 모델에 등록
+    model.addAttribute("address", address);
+
+    // 뷰 지정
+    return "page/mypage/address/update";
+  }
   
   
 

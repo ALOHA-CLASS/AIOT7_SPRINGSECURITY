@@ -83,6 +83,7 @@ public class AddressApi {
           Address updatedAddress = addressService.update(userNo, addressDto);
           return new ResponseEntity<>(updatedAddress, HttpStatus.OK);
       } catch (Exception e) {
+          e.printStackTrace();
           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
   }

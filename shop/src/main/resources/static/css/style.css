@@ -40,6 +40,7 @@
 .btn-mini.danger { background: #ffe9ec; color: #d33; }
 .btn-mini.danger:hover { background: #d33; color: #fff; }
 .btn-row { display: flex; gap: 10px; align-items: center; }
+.btn-row button { min-width: fit-content; height: stretch; }
 
 
 /* ===== 라벨/타이틀 ===== */

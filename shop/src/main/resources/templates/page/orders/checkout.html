@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>주문서 작성</title>
+</head>
+<body layout:fragment="content">
+  <div class="page-head">
+    <h2 class="page-title">CHECKOUT</h2>
+    <p class="page-desc">주문서 작성</p>
+  </div>
+
+  <div class="checkout">
+    <!-- 주문 상품 -->
+    <section class="checkout-items">
+      <h3 class="sub-title">주문 상품</h3>
+      <!-- 상품상세 ➡ 주문하기 -->
+      <ul class="order-line" th:if="${directProduct} != null">
+        <li>
+          <img th:src="${directProduct.imageUrl}" th:alt="${directProduct.name}" class="cart-thumb">
+          <span class="ol-name" th:text="${directProduct.name}">상품명</span>
+          <span class="ol-qty" th:text="'x' + ${directQuantity}">x1</span>
+          <span class="ol-price" 
+            th:text="${ #numbers.formatInteger(directProduct.price * directQuantity, 0, 'COMMA') }">0원</span>
+        </li>
+      </ul>
+      <!-- 장바구니 ➡ 주문하기 -->
+      <ul class="order-line" th:if="${directProduct} == null">
+        <li th:each="item : ${items}">
+          <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="cart-thumb">
+          <span class="ol-name" th:text="${item.product.name}">상품명</span>
+          <span class="ol-qty" th:text="'x' + ${item.quantity}">x1</span>
+          <span class="ol-price" 
+            th:text="${ #numbers.formatInteger(item.product.price * item.quantity, 0, 'COMMA') }">0원</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- TODOl: 배송지 -->
+    <!-- TODOl: 결제하기 -->
+  </div>
+</body>
+</html>

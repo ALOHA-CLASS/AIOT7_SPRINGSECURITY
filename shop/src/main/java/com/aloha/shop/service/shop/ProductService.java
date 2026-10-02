@@ -30,5 +30,8 @@ public interface ProductService {
 
   // 상품 삭제
   void delete(String id);
+
+  // 상품 상세 - no
+  Product select(Long productNo);
   
 }

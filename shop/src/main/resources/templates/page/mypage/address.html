@@ -26,10 +26,18 @@
           <span th:text="${address.address2}">상세주소</span>
         </p>
       </div>
-      <button type="button" class="btn-mini danger" th:if="${!address.defaultAddress}"
-              th:data-id="${address.id}" onclick="deleteAddress(this)">
-        삭제
-      </button>
+      <div class="btn-row">
+        <!-- ✨타임리프 표현식 -->
+        <!-- ${} : 변수 표현식  / ${object.no} -->
+        <!-- @{} : URL 표현식   / @{/users/mypage}  / Context 경로를 자동 반영 -->
+        <!-- | | : 문자열과 ${} 변수 표현식을 함께 사용-->
+        <a th:href="@{ '/users/mypage/address/update/' + ${address.id} }" class="btn-mini">수정</a>
+        <!-- <a th:href="|/users/mypage/address/update/${address.id}|" class="btn-mini">수정</a> -->
+        <button type="button" class="btn-mini danger" th:if="${!address.defaultAddress}"
+                th:data-id="${address.id}" onclick="deleteAddress(this)">
+          삭제
+        </button>
+      </div>
     </li>
   </ul>
 

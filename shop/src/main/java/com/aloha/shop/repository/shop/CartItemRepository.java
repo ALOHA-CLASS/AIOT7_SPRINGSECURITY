@@ -36,5 +36,8 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long>, CartI
   // 전체 목록
   List<CartItem> findByUserNo(Long userNo);
 
+  // 장바구니 비우기
+  void deleteByUserNo(Long userNo);
+
   
 }
