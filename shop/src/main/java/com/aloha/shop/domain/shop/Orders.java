@@ -41,6 +41,12 @@ public class Orders extends BaseEntity {
   @Column(nullable = false)
   private int totalAmount;    // 총 결제금액
 
+  // 토스페이먼츠 결제 정보
+  @Column(unique = true, length = 100)
+  private String orderNo;     // 결제창 연동용 주문번호 (requestPayment의 orderId)
+  @Column(length = 200)
+  private String paymentKey;  // 토스페이먼츠 결제 승인 키
+
   // 주문 상태
   @Builder.Default
   @Enumerated(EnumType.STRING)

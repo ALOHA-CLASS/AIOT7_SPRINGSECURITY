@@ -14,6 +14,15 @@ public interface OrderService {
   // 장바구니 전체 주문
   Orders orderCart(OrderForm orderForm);
 
+  // 결제 전 주문 생성 (상품번호 유무로 바로주문/장바구니주문을 구분)
+  Orders order(OrderForm orderForm);
+
+  // 토스페이먼츠 결제 승인
+  Orders confirmPayment(String orderNo, String paymentKey, int amount);
+
+  // 토스페이먼츠 결제 실패/취소 처리
+  void failPayment(String orderNo);
+
   // 주문 내역
   Page<Orders> list(Long userNo, Pageable pageable);
 

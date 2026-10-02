@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>결제 완료</title>
+</head>
+<body layout:fragment="content">
+  <div class="page-head">
+    <h2 class="page-title">PAYMENT SUCCESS</h2>
+    <p class="page-desc">결제가 완료되었습니다</p>
+  </div>
+
+  <div class="checkout result-box">
+    <section class="checkout-form">
+      <h3 class="sub-title">✅ 주문이 정상적으로 결제되었습니다</h3>
+
+      <ul class="order-line">
+        <li>
+          <span class="ol-name">주문번호</span>
+          <span class="ol-price" th:text="${order.orderNo}">ORDER-NO</span>
+        </li>
+        <li>
+          <span class="ol-name">결제금액</span>
+          <span class="ol-price" th:text="${ #numbers.formatInteger(order.totalAmount, 0, 'COMMA') } + '원'">0원</span>
+        </li>
+        <li>
+          <span class="ol-name">받는 사람</span>
+          <span class="ol-price" th:text="${order.receiver}">받는사람</span>
+        </li>
+        <li>
+          <span class="ol-name">배송지</span>
+          <span class="ol-price" th:text="${order.address1} + ' ' + ${order.address2}">주소</span>
+        </li>
+      </ul>
+
+      <div class="btn-row">
+        <a th:href="@{/orders}" class="btn-fill big">주문 내역으로</a>
+        <a th:href="@{/products}" class="btn-line big">쇼핑 계속하기</a>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>

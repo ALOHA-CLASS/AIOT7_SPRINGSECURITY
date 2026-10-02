@@ -36,10 +36,171 @@
             th:text="${ #numbers.formatInteger(item.product.price * item.quantity, 0, 'COMMA') }">0원</span>
         </li>
       </ul>
+      <p class="total">
+        결제 예정금액 <b th:text="${ #numbers.formatInteger(totalPrice, 0, 'COMMA') }">0원</b>
+      </p>
     </section>
 
-    <!-- TODOl: 배송지 -->
-    <!-- TODOl: 결제하기 -->
+    <!-- 배송지 -->
+    <section class="checkout-form">
+      <h2 class="sub-title">배송지 정보</h2>
+
+      <div class="saved-address" th:if="${!#lists.isEmpty(addressList)}">
+        <p class="hint">배송지 목록</p>
+        <ul>
+          <li th:each="address : ${addressList}">
+            <!-- 배송지 선택 버튼 -->
+            <button type="button" class="addr-pick"
+                    th:data-receiver="${address.receiver}"
+                    th:data-phone="${address.phone}"
+                    th:data-zipcode="${address.zipcode}"
+                    th:data-address1="${address.address1}"
+                    th:data-address2="${address.address2}"
+                    >
+              <b th:text="${address.receiver}">받는사람</b>
+              <span th:text="${address.address1}">주소</span>
+              <em th:if="${address.defaultAddress}">기본 배송지</em>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 배송지 폼 -->
+      <form th:action="@{/orders}" th:object="${orderForm}" method="post" class="form">
+        <input type="hidden" name="productNo" th:if="${directProduct != null}" th:value="${directProduct.no}">
+        <input type="hidden" name="quantity" th:if="${directProduct != null}" th:value="${directQuantity}">
+        <div class="field">
+          <label for="receiver">받는 사람</label>
+          <input type="text" th:field="*{receiver}">
+          <span class="err" th:errors="*{receiver}"></span>
+        </div>
+        <div class="field">
+          <label for="phone">연락처</label>
+          <input type="text" th:field="*{phone}">
+          <span class="err" th:errors="*{phone}"></span>
+        </div>
+        <div class="field">
+          <label for="zipcode">우편번호</label>
+          <div class="btn-row">
+            <input type="text" th:field="*{zipcode}">
+            <button type="button" class="btn-mini" onclick="searchAddress()">주소 찾기</button>
+          </div>
+          <span class="err" th:errors="*{zipcode}"></span>
+        </div>
+        <div class="field">
+          <label for="address1">기본주소</label>
+          <input type="text" th:field="*{address1}">
+          <span class="err" th:errors="*{address1}"></span>
+        </div>
+        <div class="field">
+          <label for="address2">상세주소</label>
+          <input type="text" th:field="*{address2}">
+          <span class="err" th:errors="*{address2}"></span>
+        </div>
+        <!-- 결제하기 (토스페이먼츠 결제창형 결제 호출) -->
+        <button type="submit" class="btn-fill big">결제하기</button>
+      </form>
+
+    </section>
+    
   </div>
+
+  <!-- 토스페이먼츠 결제창형 결제 SDK -->
+  <script src="https://js.tosspayments.com/v2/standard"></script>
+
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+
+      // 배송지 선택 버튼 클릭 이벤트
+      $(".addr-pick").on("click", function() {
+        $("#receiver").val( $(this).data("receiver") )
+        $("#phone").val( $(this).data("phone") )
+        $("#zipcode").val( $(this).data("zipcode") )
+        $("#address1").val( $(this).data("address1") )
+        $("#address2").val( $(this).data("address2") )
+      })
+
+      // 토스페이먼츠 결제창형 결제 초기화 (SDK 로드 실패 시에도 아래 submit 핸들러는 반드시 등록되도록 try/catch 처리)
+      const tossClientKey = /*[[${tossClientKey}]]*/ "test_ck_000000000000000000000000";
+      const customerKey = /*[[${customerKey}]]*/ "ANONYMOUS";
+      let widgets = null;
+      try {
+        const tossPayments = TossPayments(tossClientKey);
+        widgets = tossPayments.widgets({ customerKey });
+      } catch (error) {
+        console.error("토스페이먼츠 SDK 초기화 실패", error);
+      }
+
+      // 주문서(배송지) 폼 제출 ➡ 주문 생성 ➡ 결제창 호출
+      $(".checkout-form .form").on("submit", async function(e) {
+        e.preventDefault();   // 폼 기본(동기) 제출을 가장 먼저 차단
+
+        if (!widgets) {
+          $alert("결제 모듈 오류", "결제 모듈을 초기화하지 못했습니다. 새로고침 후 다시 시도해주세요.", "error");
+          return;
+        }
+
+        const orderData = {
+          productNo: $("input[name='productNo']").val() || null,
+          quantity: $("input[name='quantity']").val() || null,
+          receiver: $("#receiver").val(),
+          phone: $("#phone").val(),
+          zipcode: $("#zipcode").val(),
+          address1: $("#address1").val(),
+          address2: $("#address2").val()
+        }
+
+        try {
+          // 1. 배송지 정보로 결제 전 주문 생성
+          const order = await $ajax({
+            url: "/orders",
+            method: "POST",
+            data: orderData
+          })
+          if( order.status >= 400 ) throw new Error(order.message)
+
+          // 2. 결제 금액 설정 후 결제창(팝업/오버레이) 렌더링
+          await widgets.setAmount({
+            currency: "KRW",
+            value: order.totalAmount
+          })
+
+          const paymentWindow = await widgets.renderPaymentWindow({
+            orderName: order.orderName,
+            variantKey: { paymentMethod: "DEFAULT", agreement: "AGREEMENT" }
+          })
+
+          // 구매자가 결제수단을 선택하고 결제를 요청하면 결제를 호출
+          paymentWindow.on("paymentRequest", async ({ paymentMethod }) => {
+            try {
+              await widgets.requestPayment({
+                orderId: order.orderNo,
+                orderName: order.orderName,
+                successUrl: window.location.origin + "/orders/success",
+                failUrl: window.location.origin + "/orders/fail",
+                customerEmail: order.customerEmail,
+                customerName: order.customerName
+              })
+            } catch (error) {
+              console.error(error)
+              await paymentWindow.destroy()
+            }
+          })
+
+          // 구매자가 결제창을 닫거나 포기하면 제거
+          paymentWindow.on("cancel", async () => {
+            await paymentWindow.destroy()
+          })
+
+        } catch (error) {
+          console.error(error)
+          $alert("주문 실패", error.message || "주문 생성 중 오류가 발생했습니다.", "error")
+        }
+      })
+
+    })
+  </script>
 </body>
 </html>
+
+

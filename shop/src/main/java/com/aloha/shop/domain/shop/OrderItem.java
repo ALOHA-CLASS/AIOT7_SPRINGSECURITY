@@ -1,5 +1,7 @@
 package com.aloha.shop.domain.shop;
 
+import com.aloha.shop.domain.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,9 +20,9 @@ import lombok.Setter;
 @Builder 
 @NoArgsConstructor 
 @AllArgsConstructor 
-@Entity 
+@Entity
 @Table(name = "order_item")
-public class OrderItem {
+public class OrderItem extends BaseEntity {
 
   // 주문항목 : 주문 = N : 1
   @ManyToOne(fetch = FetchType.LAZY)

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>결제 실패</title>
+</head>
+<body layout:fragment="content">
+  <div class="page-head">
+    <h2 class="page-title">PAYMENT FAIL</h2>
+    <p class="page-desc">결제가 실패했습니다</p>
+  </div>
+
+  <div class="checkout result-box">
+    <section class="checkout-form">
+      <h3 class="sub-title">❌ 결제를 완료하지 못했습니다</h3>
+
+      <ul class="order-line">
+        <li th:if="${orderId != null}">
+          <span class="ol-name">주문번호</span>
+          <span class="ol-price" th:text="${orderId}">ORDER-NO</span>
+        </li>
+        <li th:if="${code != null}">
+          <span class="ol-name">에러코드</span>
+          <span class="ol-price" th:text="${code}">ERROR_CODE</span>
+        </li>
+        <li>
+          <span class="ol-name">실패사유</span>
+          <span class="ol-price" th:text="${message}">사유를 확인할 수 없습니다.</span>
+        </li>
+      </ul>
+
+      <div class="btn-row">
+        <a th:href="@{/orders/checkout}" class="btn-fill big">다시 결제하기</a>
+        <a th:href="@{/cart}" class="btn-line big">장바구니로</a>
+      </div>
+    </section>
+  </div>
+
+</body>
+</html>

@@ -1,11 +1,19 @@
 package com.aloha.shop.service.shop;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import com.aloha.shop.domain.shop.CartItem;
 import com.aloha.shop.domain.shop.OrderItem;
@@ -29,6 +37,12 @@ public class OrderServiceImpl implements OrderService {
   private final UserRepository userRepository;
   private final ProductRepository productRepository;
   private final CartItemRepository cartItemRepository;
+  private final RestClient restClient = RestClient.create();
+
+  @Value("${tosspayments.secret-key}")
+  private String tossSecretKey;
+
+  private static final String TOSS_CONFIRM_URL = "https://api.tosspayments.com/v1/payments/confirm";
 
   @Override
   @Transactional 
@@ -41,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
     User user = userRepository.findById(userNo)
               .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
     // 상품
-    Product product = productRepository.findById(userNo)
+    Product product = productRepository.findById(orderForm.getProductNo())
               .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
 
     // 상품 재고 확인
@@ -55,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
     Orders order = Orders.builder()
                          .user(user)
                          .status(OrderStatus.ORDERED)
+                         .orderNo(Orders.generateOrderNo())
                          .receiver(orderForm.getReceiver())
                          .phone(orderForm.getPhone())
                          .zipcode(orderForm.getZipcode())
@@ -92,6 +107,7 @@ public class OrderServiceImpl implements OrderService {
     Orders order = Orders.builder()
                          .user(user)
                          .status(OrderStatus.ORDERED)
+                         .orderNo(Orders.generateOrderNo())
                          .receiver(orderForm.getReceiver())
                          .phone(orderForm.getPhone())
                          .zipcode(orderForm.getZipcode())
@@ -134,6 +150,79 @@ public class OrderServiceImpl implements OrderService {
 
 
 
+  }
+
+  @Override
+  @Transactional
+  public Orders order(OrderForm orderForm) {
+    // 상품번호가 있으면 바로구매, 없으면 장바구니 전체주문
+    if (orderForm.getProductNo() != null) {
+      return orderDirect(orderForm);
+    }
+    return orderCart(orderForm);
+  }
+
+  @Override
+  @Transactional
+  public Orders confirmPayment(String orderNo, String paymentKey, int amount) {
+    Orders order = orderRepository.findByOrderNo(orderNo)
+                  .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
+
+    // 이미 승인된 주문이면 중복 승인 방지
+    if (order.getStatus() == OrderStatus.PAID) {
+      return order;
+    }
+
+    // 결제 금액 위변조 검증
+    if (order.getTotalAmount() != amount) {
+      cancelInternal(order);
+      throw new IllegalStateException("결제 금액이 일치하지 않습니다.");
+    }
+
+    // 토스페이먼츠 결제 승인 API 호출
+    String encodedKey = Base64.getEncoder()
+                              .encodeToString((tossSecretKey + ":").getBytes(StandardCharsets.UTF_8));
+    Map<String, Object> body = Map.of(
+        "paymentKey", paymentKey,
+        "orderId", orderNo,
+        "amount", amount
+    );
+
+    try {
+      restClient.post()
+                .uri(TOSS_CONFIRM_URL)
+                .header(HttpHeaders.AUTHORIZATION, "Basic " + encodedKey)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
+                .retrieve()
+                .toBodilessEntity();
+    } catch (HttpStatusCodeException e) {
+      // 승인 실패 ➡ 주문 취소 및 재고 복원 후 예외 전달
+      cancelInternal(order);
+      throw new IllegalStateException("결제 승인에 실패했습니다: " + e.getResponseBodyAsString(), e);
+    }
+
+    order.setStatus(OrderStatus.PAID);
+    order.setPaymentKey(paymentKey);
+    return orderRepository.save(order);
+  }
+
+  @Override
+  @Transactional
+  public void failPayment(String orderNo) {
+    if (orderNo == null) return;
+    orderRepository.findByOrderNo(orderNo).ifPresent(this::cancelInternal);
+  }
+
+  // 주문취소 + 재고복원 공통 처리
+  private void cancelInternal(Orders order) {
+    if (order.getStatus() == OrderStatus.CANCELED) return;
+    order.setStatus(OrderStatus.CANCELED);
+    for (OrderItem item : order.getOrderItems()) {
+      Product product = item.getProduct();
+      product.setStock(product.getStock() + item.getQuantity());
+    }
+    orderRepository.save(order);
   }
 
   @Override

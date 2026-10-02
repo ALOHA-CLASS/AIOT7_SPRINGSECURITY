@@ -238,6 +238,27 @@
 .ai-info b { font-size: 16px; margin-right: 8px; }
 .ai-info p { font-size: 14px; color: #555; margin-top: 4px; }
 
+/* ===== 주문서(checkout) ===== */
+.checkout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.order-line li {
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid var(--line); font-size: 14px;
+}
+.ol-name { flex: 1; font-weight: 600; }
+.ol-qty { color: var(--gray); }
+.ol-price { font-weight: 700; }
+.checkout-items .total { margin-top: 20px; text-align: right; font-size: 16px; }
+.checkout-items .total b { font-size: 22px; font-weight: 800; color: var(--point); margin-left: 8px; }
+.saved-address { margin-bottom: 20px; }
+.saved-address .hint { font-size: 13px; color: var(--gray); margin-bottom: 8px; }
+.saved-address ul { display: flex; flex-wrap: wrap; gap: 8px; }
+.addr-pick { 
+    padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; 
+    text-align: left; font-size: 13px; transition: 0.2s;
+}
+.addr-pick:hover { border-color: var(--point); }
+.addr-pick b { display: block; }
+.addr-pick em { color: var(--point); font-size: 11px; font-weight: 700; }
 
 
 /* =====  ===== */
