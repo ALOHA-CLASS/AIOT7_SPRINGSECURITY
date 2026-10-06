@@ -7,15 +7,20 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.aloha.shop.domain.shop.CartItem;
 import com.aloha.shop.domain.shop.Orders;
@@ -171,6 +176,47 @@ public class OrderController {
     return "page/orders/fail";
   }
 
+
+  // 주문 내역
+  @GetMapping
+  public String list(
+    @AuthenticationPrincipal CustomUser loginUser,
+    @RequestParam(value = "page", defaultValue = "0") int page,
+    @RequestParam(value = "size", defaultValue = "5") int size,
+    @RequestParam(value = "count", defaultValue = "10") int count,
+    Model model
+  ) {
+    Long userNo = loginUser.getUser().getNo();
+    Pageable pageable = PageRequest.of(page, size);
+    Page<Orders> orders = orderService.list(userNo, pageable);
+    model.addAttribute("orders", orders);
+    model.addAttribute("count", count);
+
+    // 페이지 URL 생성
+    // - /orders?size=8&count=10
+    String url = UriComponentsBuilder
+                  .fromPath("/orders")
+                  .queryParam("size", size)
+                  .queryParam("count", count)
+                  .toUriString();
+    log.info("url : {}", url);
+    model.addAttribute("url", url);
+    return "page/orders/list";
+  }
+  
+  // 주문 상세
+  @GetMapping("/{no}")
+  public String detail(
+    @AuthenticationPrincipal CustomUser loginUser,
+    @PathVariable("no") Long no,
+    Model model
+  ) {
+    Long userNo = loginUser.getUser().getNo();
+    Orders order = orderService.select(userNo, no);
+    model.addAttribute("order", order);
+    return "page/orders/detail";
+  }
+  
 
 }
 

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>주문 상세</title>
+</head>
+<body layout:fragment="content">
+  <div class="page-head">
+    <div class="page-title">ORDER DETAIL</div>
+    <p class="page-desc">주문 상세</p>
+  </div>
+
+  <div class="order-detail">
+    <div class="od-row">
+      <span>주문번호</span><b th:text="${order.orderNo}">주문번호</b>
+    </div>
+    <div class="od-row">
+      <span>주문일</span>
+      <b th:text="${ #temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm') }">주문일</b>
+    </div>
+    <div class="od-row">
+      <span>상태</span><b class="badge" th:text="${order.status.label}">상태</b>
+    </div>
+    <div class="od-row">
+      <span>배송지</span>
+      <b>
+        <span th:text="${order.receiver}">받는사람</span>
+        <span th:text="${order.phone}">연락처</span>
+        <span th:text="${order.zipcode}">우편번호</span>
+        <span th:text="${order.address1}">주소</span>
+        <span th:text="${order.address2}">상세주소</span>
+      </b>
+    </div>
+  </div>
+
+  <h3 class="sub-title">주문 상품</h3>
+  <table class="order-table">
+    <thead>
+      <tr>
+        <th>상품</th>
+        <th>상품명</th>
+        <th>단가</th>
+        <th>수량</th>
+        <th>합계</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="item : ${order.orderItems}">
+        <td>
+          <a th:href="@{/products/{id}(id=${item.product.id})}">
+            <img th:src="${item.product.imageUrl}" th:alt="${item.productName}" class="cart-thumb">
+          </a>
+        </td>
+        <td th:text="${item.productName}">상품명</td>
+        <td th:text="${ #numbers.formatInteger(item.price, 0, 'COMMA') } + '원'">0원</td>
+        <td th:text="${item.quantity}">1</td>
+        <td th:text="${ #numbers.formatInteger(item.subtotal, 0, 'COMMA') } + '원'">0원</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="cart-summary">
+    <p class="total">총 결제금액
+      <b th:text="${ #numbers.formatInteger(order.totalAmount, 0, 'COMMA') } + '원'">0원</b>
+    </p>
+    <div class="btn-row">
+      <a th:href="@{/orders}" class="btn-line">주문내역</a>
+      <button type="button" class="btn-fill danger">주문 취소</button>
+    </div>
+  </div>
+
+</body>
+</html>
