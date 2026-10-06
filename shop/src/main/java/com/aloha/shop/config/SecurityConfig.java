@@ -1,26 +1,34 @@
 package com.aloha.shop.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import com.aloha.shop.security.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Spring Security 설정
  */
+@Slf4j 
 @Configuration                // 스프링 빈 설정 클래스로 지정
 @EnableWebSecurity            // 스프리 시큐리티 설정 클래스로 지정
 @RequiredArgsConstructor      // 필수 매개변수 생성자 자동 생성
 public class SecurityConfig {
 
   private final CustomUserDetailsService customUserDetailsService;
+  private final DataSource dataSource;
 
   // ⚡ 스프링 시큐리티 설정 방법
   // - SecurityFilterChain 을 빈 등록해서 인가설정, 폼로그인 설정 등을 한다.
@@ -51,6 +59,14 @@ public class SecurityConfig {
     // 사용자 정의 인증
     http.userDetailsService(customUserDetailsService);
 
+    // 자동 로그인
+    http.rememberMe(remember -> remember
+      .key("shop")                                      // 토큰 생성용 키
+      // .rememberMeParameter("remember-me")            // 자동 로그인 체크박스 name
+      .tokenRepository(tokenRepository())               // 토큰 저장소(persistence_logins) 설정
+      .tokenValiditySeconds(60 * 60 * 24 * 14)          // 토큰 유효기간 14일
+    );
+
     // 로그아웃
     http.logout(logout -> logout
                       .logoutUrl("/users/logout")
@@ -68,6 +84,26 @@ public class SecurityConfig {
   @Bean 
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
+  }
+
+
+  @Bean 
+  public PersistentTokenRepository tokenRepository() {
+    // JdbcTokenRepositoryImpl : 토큰 저장 데이터 베이스를 등록하는 객체
+    JdbcTokenRepositoryImpl repositoryImpl = new JdbcTokenRepositoryImpl();
+    // ✅ 토큰 저장소를 사용하는 데이터 소스 지정
+    // - SpringSecurity 가 자동 로그인 프로세스를 처리하기 위한 DB를 지정합니다.
+    repositoryImpl.setDataSource(dataSource);
+
+    // persistent_logins 테이블 생성
+    try {
+      repositoryImpl.getJdbcTemplate().execute(JdbcTokenRepositoryImpl.CREATE_TABLE_SQL);
+    } catch (BadSqlGrammarException e) {
+      log.error("persistent_logins 테이블이 이미 존재합니다.");
+    } catch (Exception e) {
+      log.error("자동 로그인 테이블 생성 중, 예외 발생");
+    }
+    return repositoryImpl;
   }
   
 }

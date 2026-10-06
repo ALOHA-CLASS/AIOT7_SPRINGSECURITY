@@ -10,16 +10,27 @@
   <div class="auth-box">
     <h2 class="auth-title">회원가입</h2>
 
-    <form th:action="@{/users/join}" method="post" class="form" th:object="${joinDto}">
+    <form th:action="@{/users/join}" method="post" class="form" th:object="${joinDto}"
+          onsubmit="return validateForm()">
       <div class="field">
         <label for="username">아이디</label>
-        <input type="text" th:field="*{username}" placeholder="4~50자 내로 입력하세요.">
+        <div class="btn-row">
+          <input type="text" th:field="*{username}" placeholder="4~50자 내로 입력하세요.">
+          <button type="button" class="btn-mini" onclick="checkUsername()">중복확인</button>
+        </div>
         <span class="err" th:errors="*{username}"></span>
+        <span class="ok" id="usernameMsg"></span>
       </div>
       <div class="field">
         <label for="password">비밀번호</label>
         <input type="password" th:field="*{password}" placeholder="6자리 이상 입력하세요.">
         <span class="err" th:errors="*{password}"></span>
+      </div>
+      <div class="field">
+        <label for="passwordConfirm">비밀번호 확인</label>
+        <input type="password" th:field="*{passwordConfirm}" placeholder="비밀번호를 다시 입력하세요.">
+        <span class="err" th:errors="*{passwordConfirm}"></span>
+        <span class="ok" id="passwordConfirmMsg"></span>
       </div>
       <div class="field">
         <label for="name">이름</label>
@@ -39,5 +50,104 @@
     </form>
     <p class="auth-link">이미 회원이신가요? <a th:href="@{/users/login}">로그인</a></p>
   </div>
+
+  <script>
+    // 아이디 중복확인 여부
+    let isUsernameChecked = false
+    // 중복확인 된 아이디
+    let checkedUsername = ""
+
+    // 아이디 중복확인
+    // GET /api/users/check-username?username=⭐
+    async function checkUsername() {
+      const username = $("#username").val().trim()
+      if(!username) {
+        isUsernameChecked = false
+        return $toast({ title: "아이디를 입력하세요.", icon: "info" })
+      }
+
+      try {
+        const available = await $ajax({
+          url: "/api/users/check-username",
+          method: "GET",
+          data: { username : username }
+        })
+
+        if( available ) {
+          isUsernameChecked = true
+          checkedUsername = username
+          $("#usernameMsg").text("사용 가능한 아이디 입니다.")
+          $("#usernameMsg").addClass("ok")
+          $("#usernameMsg").removeClass("err")
+          $toast({ title: "사용 가능한 아이디 입니다." })
+        } else {
+          isUsernameChecked = false
+          checkedUsername = ""
+          $("#usernameMsg").text("이미 사용 중인 아이디입니다.")
+          $("#usernameMsg").addClass("err")
+          $("#usernameMsg").removeClass("ok")
+          $toast({ title: "이미 사용 중인 아이디입니다.", icon : "warning" })
+        }
+      } catch (error) {
+        console.error(error);
+        $toast({ title: "아이디 중복확인 중 에러 발생!", icon : "error" })
+      }
+    }
+
+    // 아이디를 다시 수정하면, 중복확인 결과 초기화
+    $("#username").on("input", function() {
+      const username = $(this).val().trim()
+      if( username !== checkedUsername ) {
+        isUsernameChecked = false
+        $("#usernameMsg").text("")
+      }
+    })
+
+    // 회원가입 제출 전 유효성 검사
+    function validateForm() {
+      const username = $("#username").val().trim()
+      const password = $("#password").val()
+      const passwordConfirm = $("#passwordConfirm").val()
+
+      // 아이디 중복확인 하지 않았거나, 이후에 변경 한 경우
+      if( !isUsernameChecked || username !== checkedUsername ) {
+        $toast({ title : "아이디 중복확인을 해주세요.", icon: "warning" })
+        return false
+      }
+
+      // 비밀번호 확인
+      if( password != passwordConfirm ) {
+        $toast({ title : "비밀번호가 일치하지 않습니다.", icon: "warning" })
+        return false
+      }
+
+      // 유효성 통과
+      return true
+    }
+
+    // 비밀번호 / 비밀번호 확인 일치
+    function checkPasswordMatch() {
+      const password = $("#password").val()
+      const passwordConfirm = $("#passwordConfirm").val()
+
+      if( !passwordConfirm ) {
+        $("#passwordConfirmMsg").text("")
+        return
+      }
+
+      if( password === passwordConfirm ) {
+        $("#passwordConfirmMsg").addClass("ok")
+        $("#passwordConfirmMsg").removeClass("err")
+        $("#passwordConfirmMsg").text("비밀번호가 일치합니다.")
+      } else {
+        $("#passwordConfirmMsg").addClass("err")
+        $("#passwordConfirmMsg").removeClass("ok")
+        $("#passwordConfirmMsg").text("비밀번호가 일치하지 않습니다.")
+      }
+    }
+    // 비밀번호/확인 키 입력 시 이벤트
+    $("#password, #passwordConfirm").on("keyup", checkPasswordMatch)
+
+  </script>
 </body>
 </html>

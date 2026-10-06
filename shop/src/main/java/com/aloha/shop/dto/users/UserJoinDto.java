@@ -17,6 +17,9 @@ public class UserJoinDto {
   @Size(min = 6, message = "비밀번호는 6자 이상 입력하세요.")
   private String password;
 
+  @NotBlank(message = "비밀번호 확인을 입력하세요.")
+  private String passwordConfirm;
+
   @NotBlank(message = "이름을 입력하세요.")
   private String name;
 
