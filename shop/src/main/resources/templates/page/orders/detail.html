@@ -67,9 +67,48 @@
     </p>
     <div class="btn-row">
       <a th:href="@{/orders}" class="btn-line">주문내역</a>
-      <button type="button" class="btn-fill danger">주문 취소</button>
+      <!-- 주문 취소가 가능한 상태 : 주문완료(ORDERED), 결제완료(PAID) -->
+      <button type="button" class="btn-fill danger"
+              onclick="cancelOrder(this)"
+              th:if="${ order.status.name() == 'ORDERED' || order.status.name() == 'PAID' }"
+              th:data-no="${order.no}"
+              >주문 취소</button>
     </div>
   </div>
+
+  <script>
+    // 주문 취소
+    async function cancelOrder(button) {
+      const no = $(button).data("no")
+
+      const result = await $confirm({
+        title: "주문을 취소하시겠습니까?",
+        text: "취소한 주문은 되돌릴 수 없습니다.",
+        icon: "warning",
+        confirmButtonText: "주문 취소",
+        cancelButtonText: "닫기"
+      })
+      if( !result.isConfirmed ) return
+
+      const response = await $ajax({
+        url: `/api/orders/${no}/cancel`,
+        method: "PUT"
+      })
+
+      if( response === 'SUCCESS' ) {
+        await $toast_({
+          title: "주문이 취소되었습니다.",
+          icon: "success"
+        })
+        location.reload()
+      } else {
+        $toast({
+          title: "주문 취소가 실패했습니다.",
+          icon: "error"
+        })
+      }
+    }
+  </script>
 
 </body>
 </html>

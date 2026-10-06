@@ -59,63 +59,7 @@
   <p class="class" th:if="${items.empty}">장바구니가 비어 있습니다.</p>
 
   <!-- 페이지네이션 -->
-  <nav class="paging" th:if="${items.totalPages > 0}">
-
-    <!-- 처음 -->
-    <a class="pg-btn"
-      th:href="${url + '&page=0'}" >
-      <span class="material-symbols-outlined">
-        keyboard_double_arrow_left
-      </span>
-    </a>
-
-    <!-- 이전 -->
-    <a class="pg-btn"
-       th:classappend="${items.first} ? 'disabled'"
-       th:href="${url + '&page=' + (items.number - 1)}">
-      <span class="material-symbols-outlined">
-        chevron_left
-      </span>
-    </a>
-
-    <!-- 페이지 번호 -->
-    <span class="pg-nums">
-      <th:block th:with="
-        startPage=${(items.number / count) * count},
-        endPage=${T(java.lang.Math).min(
-          ((items.number / count) * count) + count - 1,
-          items.totalPages - 1
-        )}
-      ">
-          <th:block th:each="i : ${ #numbers.sequence(startPage, endPage) }">
-            <a th:href="${url + '&page=' + i}"
-               th:text="${i + 1}"
-               class="pg-num"
-               th:classappend="${i == items.number} ? 'on'"
-               >1</a>
-          </th:block>
-
-      </th:block>
-    </span>
-
-    <!-- 다음 -->
-    <a class="pg-btn"
-       th:classappend="${items.last} ? 'disabled'"
-       th:href="${url + '&page=' + (items.number + 1)}">
-      <span class="material-symbols-outlined">
-        chevron_right
-      </span>
-    </a>
-
-    <!-- 마지막 -->
-    <a class="pg-btn"
-       th:href="${url + '&page=' + (items.totalPages - 1)}">
-      <span class="material-symbols-outlined">
-        keyboard_double_arrow_right
-      </span>
-    </a>
-
-  </nav>
+  <th:block th:replace="~{fragments/paging :: paging( ${items} )}"></th:block>
   
 
   <!-- 총금액/주문하기 -->

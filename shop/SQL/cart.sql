@@ -1,4 +1,5 @@
 -- 장바구니 샘플데이터
+SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE cart_item;
 
 INSERT INTO cart_item
