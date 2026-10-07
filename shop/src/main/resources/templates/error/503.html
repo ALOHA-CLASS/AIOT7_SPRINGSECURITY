@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>서비스 이용 불가</title>
+</head>
+<body layout:fragment="content">
+  <th:block th:replace="~{error/fragment :: errorBox('503', '서비스를 일시적으로 이용할 수 없습니다', '점검 또는 일시적인 장애로 서비스에 접속할 수 없습니다. 잠시 후 다시 시도해 주세요.')}"></th:block>
+</body>
+</html>

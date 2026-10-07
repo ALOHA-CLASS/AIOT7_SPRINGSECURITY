@@ -18,5 +18,12 @@ public interface UserService {
   // 회원 수정
   User update(String username, UserUpdateDto dto);
 
+  // 현재 비밀번호 일치 여부 
+  boolean checkPassword(String username, String passwrod);
+
+  // 비밀번호 변경
+  User changePassword(String username, String newPassword);
+
+
   
 }

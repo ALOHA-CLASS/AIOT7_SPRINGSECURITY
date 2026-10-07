@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>요청 오류</title>
+</head>
+<body layout:fragment="content">
+  <th:block th:replace="~{error/fragment :: errorBox(${status} ?: '4xx', '요청을 처리할 수 없습니다', '요청을 처리하는 중 문제가 발생했습니다. 다시 시도해 주세요.')}"></th:block>
+</body>
+</html>

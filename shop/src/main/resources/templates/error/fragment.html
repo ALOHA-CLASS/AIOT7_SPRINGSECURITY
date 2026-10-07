@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- 에러 페이지 공통 박스 : errorBox(코드, 제목, 메시지) -->
+  <th:block th:fragment="errorBox(code, title, message)">
+    <section class="error-box">
+      <p class="error-code" th:text="${code}">404</p>
+      <h2 class="error-title" th:text="${title}">에러 제목</h2>
+      <p class="error-message" th:text="${message}">에러 메시지</p>
+      <div class="btn-row">
+        <a th:href="@{/}" class="btn-fill big">홈으로</a>
+        <a href="javascript:history.back()" class="btn-line big">이전 페이지</a>
+      </div>
+    </section>
+  </th:block>
+</body>
+</html>

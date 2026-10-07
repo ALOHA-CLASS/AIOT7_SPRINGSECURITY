@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>인증 필요</title>
+</head>
+<body layout:fragment="content">
+  <th:block th:replace="~{error/fragment :: errorBox('401', '로그인이 필요합니다', '이 페이지는 로그인한 사용자만 이용할 수 있습니다. 로그인 후 다시 시도해 주세요.')}"></th:block>
+</body>
+</html>

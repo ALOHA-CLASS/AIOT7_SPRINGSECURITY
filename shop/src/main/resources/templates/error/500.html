@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>서버 오류</title>
+</head>
+<body layout:fragment="content">
+  <th:block th:replace="~{error/fragment :: errorBox('500', '서버에 문제가 발생했습니다', '일시적인 오류입니다. 잠시 후 다시 시도해 주세요. 문제가 계속되면 관리자에게 문의해 주세요.')}"></th:block>
+</body>
+</html>

@@ -7,6 +7,86 @@
   <title>HOME</title>
 </head>
 <body layout:fragment="content">
-  <h1>메인 화면</h1>
+
+  <!-- 이미지 슬라이드 -->
+  <section class="main-swiper">
+    <!-- 슬라이드 메인 컨테이너 -->
+    <div class="swiper">
+      <!-- 슬라이드 래퍼 -->
+      <div class="swiper-wrapper">
+        <!-- 슬라이드 -->
+        <div class="swiper-slide"><img th:src="@{/img/1.png}" alt="슬라이드 이미지"></div>
+        <div class="swiper-slide"><img th:src="@{/img/2.png}" alt="슬라이드 이미지"></div>
+        <div class="swiper-slide"><img th:src="@{/img/3.png}" alt="슬라이드 이미지"></div>
+      </div>
+      <!-- 페이지네이션 -->
+      <div class="swiper-pagination"></div>
+      <!-- 이전, 다음 화살표 -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
+  </section> 
+  
+  <!-- 비주얼 배너 -->
+  <section class="visual">
+    <div class="visual-text">
+      <span class="sec-label">2026 NEW ARRIVAL</span>
+      <h2 class="visual-title">심플하게, <b>ALOHA STORE</b></h2>
+      <p class="visual-desc">데일리로 즐기는 감각적인 라이프스타일 아이템</p>
+      <a th:href="@{/products}" class="btn-fill big">지금 쇼핑하기</a>
+    </div>
+  </section>
+
+  <!-- 신상품 -->
+  <seciton class="section">
+    <div class="sec-head">
+      <span class="sec-label">NEW ITEMS</span>
+      <h2 class="sec-title">신상품 <b>추천</b></h2>
+    </div>
+
+    <ul class="product-grid">
+      <li class="product-card" th:each="p : ${products}">
+        <a th:href="@{/products/{id}(id=${p.id})}">
+          <div class="thumb">
+            <img th:src="${p.imageUrl}" th:alt="${p.name}">
+          </div>
+          <div class="info">
+            <span class="cate" th:text="${p.category}">카테고리</span>
+            <p class="name" th:text="${p.name}">상품명</p>
+            <p class="price"><b th:text="${ #numbers.formatInteger(p.price, 0, 'COMMA')}">0</b>원</p>
+          </div>
+        </a>
+      </li>
+      <li th:if="${#lists.isEmpty(products)}" class="empty">등록된 상품이 없습니다.</li>
+    </ul>
+
+    <div class="center">
+      <a th:href="@{/products}" class="btn-line">전체 상품 보기</a>
+    </div>
+   </seciton>
+
+
+  <script>
+    const swiper = new Swiper('.swiper', {
+    // 옵션 파라미터
+    direction: 'horizontal',      // 'horizontal' (가로), 'vertical' (세로)
+    loop: true,
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false
+    },
+    // 페이지네이션
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true
+    },
+    // 화살표
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+
+  });
+  </script>
 </body>
 </html>

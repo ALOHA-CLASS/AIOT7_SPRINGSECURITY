@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main_layout}">
+<head>
+  <title>잘못된 요청</title>
+</head>
+<body layout:fragment="content">
+  <th:block th:replace="~{error/fragment :: errorBox('400', '잘못된 요청입니다', '요청 형식이 올바르지 않습니다. 입력값을 확인한 뒤 다시 시도해 주세요.')}"></th:block>
+</body>
+</html>

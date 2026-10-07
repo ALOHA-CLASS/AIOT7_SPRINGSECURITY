@@ -19,15 +19,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.aloha.shop.domain.users.Address;
 import com.aloha.shop.domain.users.User;
 import com.aloha.shop.dto.users.AddressDto;
+import com.aloha.shop.dto.users.PasswordChangeDto;
+import com.aloha.shop.dto.users.PasswordCheckDto;
 import com.aloha.shop.dto.users.UserJoinDto;
 import com.aloha.shop.dto.users.UserUpdateDto;
 import com.aloha.shop.security.CustomUser;
 import com.aloha.shop.service.users.AddressService;
 import com.aloha.shop.service.users.UserService;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
 
 
 
@@ -42,6 +49,9 @@ public class UserController {
   
   private final UserService userService;
   private final AddressService addressService;
+
+  // 비밀번호 확인 완료 세션 키
+  private static final String PASSWORD_VERIFIED = "PASSWORD_VERIFIED";
 
   // 회원가입 화면
   // @ModelAttribute : 해당 파라미터를 모델로 자동 지정
@@ -211,8 +221,102 @@ public class UserController {
     return "page/mypage/address/update";
   }
   
+  // 비밀번호 확인 화면
+  @GetMapping("/mypage/password/check")
+  public String passwordCheck(
+    @ModelAttribute("checkDto") PasswordCheckDto checkDto,
+    HttpSession session
+  ) {
+    // 확인 화면에 들어오면 비밀번호 확인 완료 정보를 제거
+    session.removeAttribute(PASSWORD_VERIFIED);
+    return "page/mypage/password-check";
+  }
   
+  // 비밀번호 확인 처리
+  @PostMapping("/mypage/password/check")
+  public String passwordCheck(
+    @AuthenticationPrincipal CustomUser loginUser,
+    @Valid @ModelAttribute("checkDto") PasswordCheckDto checkDto,
+    BindingResult bindingResult,
+    HttpSession session
+  ) {
+    // 비밀번호 미 입력 시
+    if( bindingResult.hasErrors() ) {
+      return "page/mypage/password-check";
+    }
+    // 비밀번호 일치 여부 확인
+    String username = loginUser.getUser().getUsername();
+    String passwrod = checkDto.getPassword();
+    boolean result = userService.checkPassword(username, passwrod);
 
+    // 불일치
+    if( !result ) {
+      bindingResult.rejectValue("password", "mismatch", "비밀번호가 일치하지 않습니다.");
+      return "page/mypage/password-check";
+    }
+    // 현재 비밀번호 확인 완료 여부를 세션에 저장
+    session.setAttribute(PASSWORD_VERIFIED, true);
+    return "redirect:/users/mypage/password";
+  }
+
+  // 비밀번호 변경 화면
+  @GetMapping("/mypage/password")
+  public String password(
+    @ModelAttribute("changeDto") PasswordChangeDto changeDto,
+    HttpSession session
+  ) {
+    // 현재 비밀번호 일치 여부가 없으면
+    if( session.getAttribute(PASSWORD_VERIFIED) == null ) {
+      return "redirect:/users/mypage/password/check";
+    }
+
+    return "page/mypage/password";
+  }
+
+  // 비밀번호 변경처리
+  @PostMapping("/mypage/password")
+  public String changePassword(
+    @AuthenticationPrincipal CustomUser loginUser,
+    @Valid @ModelAttribute("changeDto") PasswordChangeDto changeDto,
+    BindingResult bindingResult,
+    HttpSession session,
+    RedirectAttributes ra
+  ) {
+    // 유효성 검사
+    // - 비밀번호 확인 완료 여부 체크
+    if( session.getAttribute(PASSWORD_VERIFIED) == null ) {
+      return "redirect:/users/mypage/password/check";
+    }
+    // 비밀번호 6자리 이상, 확인하고 일치 여부 체크
+    if( !bindingResult.hasFieldErrors("newPassword")
+        && !bindingResult.hasFieldErrors("newPasswordConfirm")
+        && !changeDto.getNewPassword().equals(changeDto.getNewPasswordConfirm()) ) {
+      bindingResult.rejectValue("newPasswordConfirm", "mismatch", "비밀번호가 일치하지 않습니다.");
+    }
+    if( bindingResult.hasErrors() ) {
+      return "page/mypage/password";
+    }
+      
+    // 비밀번호 변경 요청
+    String username = loginUser.getUser().getUsername();
+    String newPassword = changeDto.getNewPassword();
+    User updatedUser = userService.changePassword(username, newPassword);
+    session.removeAttribute(PASSWORD_VERIFIED);
+
+    // 로그인 인증 정보 갱신
+    CustomUser updatedLoginUser = new CustomUser(updatedUser);
+    Authentication authentication = new UsernamePasswordAuthenticationToken(
+                                                    updatedLoginUser,
+                                                    updatedLoginUser.getPassword(),
+                                                    updatedLoginUser.getAuthorities()
+                                                  );
+    SecurityContextHolder.getContext().setAuthentication(authentication);       
+    ra.addFlashAttribute("message", "비밀번호가 변경되었습니다.");
+    return "redirect:/users/mypage/info";
+  }
+  
+  
+  
   
 }
 
