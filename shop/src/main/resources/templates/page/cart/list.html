@@ -13,48 +13,50 @@
     <p class="page-desc">장바구니</p>
   </div>
 
-  <table class="cart-table" th:if="${!items.empty}">
-    <thead>
-      <th>상품</th>
-      <th>가격</th>
-      <th>수량</th>
-      <th>합계</th>
-      <th>관리</th>
-    </thead>
-    <tbody>
-      <tr th:each="item : ${items.content}" th:attr="data-no=${item.no}">
-        <td class="cart-prod">
-          <a th:href="|/products/${item.product.id}|">
-            <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="cart-thumb">
-            <span th:text="${item.product.name}"></span>
-          </a>
-        </td>
-        <td th:text="${ #numbers.formatInteger(item.product.price, 0, 'COMMA') } + '원'">0원</td>
-        <td>
-          <form th:action="|/cart/${id}/update|" method="post" class="qty-form js-qty-form" th:data-no="${item.no}">
-            <input type="number" name="quantity" th:value="${item.quantity}" min="1">
-            <button type="button" class="btn-mini"
+  <div class="table-wrap">
+    <table class="cart-table" th:if="${!items.empty}">
+      <thead>
+        <th>상품</th>
+        <th>가격</th>
+        <th>수량</th>
+        <th>합계</th>
+        <th>관리</th>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${items.content}" th:attr="data-no=${item.no}">
+          <td class="cart-prod">
+            <a th:href="|/products/${item.product.id}|">
+              <img th:src="${item.product.imageUrl}" th:alt="${item.product.name}" class="cart-thumb">
+              <span class="name" th:text="${item.product.name}"></span>
+            </a>
+          </td>
+          <td th:text="${ #numbers.formatInteger(item.product.price, 0, 'COMMA') } + '원'">0원</td>
+          <td>
+            <form th:action="|/cart/${id}/update|" method="post" class="qty-form js-qty-form" th:data-no="${item.no}">
+              <input type="number" name="quantity" th:value="${item.quantity}" min="1">
+              <button type="button" class="btn-mini"
+                      th:data-id="${item.id}"
+                      onclick="updateCart(this)"
+                      >
+                      변경
+              </button>
+            </form>
+          </td>
+          <td class="item-total">
+            <th:block th:text="${ #numbers.formatInteger(item.product.price * item.quantity, 0, 'COMMA') } + '원' ">0원</th:block>
+          </td>
+          <td>
+            <button type="button" class="btn-mini danger" 
                     th:data-id="${item.id}"
-                    onclick="updateCart(this)"
+                    onclick="deleteCart(this)"
                     >
-                    변경
+                    삭제
             </button>
-          </form>
-        </td>
-        <td class="item-total">
-          <th:block th:text="${ #numbers.formatInteger(item.product.price * item.quantity, 0, 'COMMA') } + '원' ">0원</th:block>
-        </td>
-        <td>
-          <button type="button" class="btn-mini danger" 
-                  th:data-id="${item.id}"
-                  onclick="deleteCart(this)"
-                  >
-                  삭제
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <p class="class" th:if="${items.empty}">장바구니가 비어 있습니다.</p>
 

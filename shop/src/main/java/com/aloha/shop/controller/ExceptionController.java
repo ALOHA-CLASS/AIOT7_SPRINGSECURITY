@@ -95,6 +95,7 @@ public class ExceptionController {
     response.setStatus(status);                 // 응답 상태코드를 해당 값으로 직접 세팅
     model.addAttribute("status", status);       // 화면(error/4xx, 5xx)에서 ${status} 로 사용
     log.warn("{} {} : {}", status, request.getRequestURI(), e.getReason());
+    e.printStackTrace();
     return resolveErrorView(status);            // 상태코드에 맞는 뷰 이름 결정
   }
 
@@ -115,6 +116,7 @@ public class ExceptionController {
       throw e;
     }
     log.error("500 Server Error : {}", request.getRequestURI(), e);
+    e.printStackTrace();
     return "error/500";
   }
 

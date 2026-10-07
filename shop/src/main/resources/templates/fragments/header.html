@@ -22,6 +22,10 @@
   <!-- 헤더 -->
   <header id="header">
     <div class="inner">
+      <button type="button" class="menu-toggle" aria-label="메뉴 열기" 
+              aria-controls="offcanvas" aria-expanded="false">
+        <i data-lucide="menu"></i>
+      </button>
       <h1 class="logo"><a th:href="@{/}">ALOHA<b>STORE</b></a></h1>
       <nav class="gnb">
         <ul>
@@ -35,15 +39,66 @@
       <div class="util">
         <form class="search" th:action="@{/products}" method="get">
           <input type="text" name="keyword" placeholder="상품 검색" th:value="${param.keyword}">
-          <button type="submit">🔍</button>
+          <button type="submit"><i data-lucide="search"></i></button>
         </form>
         <a class="ico cart" th:href="@{/cart}" sec:authorize="isAuthenticated()">
-            🛒<span class="count" th:text="${cartCount}">0</span>
+            <i data-lucide="shopping-cart"></i><span class="count" th:text="${cartCount}">0</span>
         </a>
-        <a class="ico" th:href="@{/orders}" sec:authorize="isAuthenticated()">📦</a>
+        <a class="ico" th:href="@{/orders}" sec:authorize="isAuthenticated()">
+          <i data-lucide="package"></i>
+        </a>
       </div>
     </div>
   </header>
+
+  <!-- 모바일 오프캔버스 메뉴 -->
+  <div class="offcanvas-backdrop" hidden></div>
+  <aside id="offcanvas" class="offcanvas" aria-hidden="true" aria-label="전체 메뉴">
+    <div class="oc-head">
+      <h2 class="logo"><a th:href="@{/}">ALOHA<b>STORE</b></a></h2>
+      <button type="button" class="oc-close" aria-label="메뉴 닫기"><i data-lucide="x"></i></button>
+    </div>
+    <div class="oc-body">
+      <form class="oc-search" th:action="@{/products}" method="get">
+        <i data-lucide="search"></i>
+        <input type="text" name="keyword" placeholder="상품 검색" th:value="${param.keyword}">
+      </form>
+      <ul class="oc-nav">
+        <li><a th:href="@{/}"><i data-lucide="home"></i>HOME</a></li>
+        <li><a th:href="@{/products}"><i data-lucide="store"></i>SHOP</a></li>
+        <li><a th:href="@{/products(category='의류')}"><i data-lucide="shirt"></i>의류</a></li>
+        <li><a th:href="@{/products(category='가방')}"><i data-lucide="shopping-bag"></i>가방</a></li>
+        <li><a th:href="@{/products(category='액세서리')}"><i data-lucide="watch"></i>액세서리</a></li>
+        <li sec:authorize="isAuthenticated()"><a th:href="@{/orders}"><i data-lucide="package"></i>주문내역</a></li>
+      </ul>
+    </div>
+    <div class="oc-foot">
+      <ul sec:authorize="isAnonymous()">
+        <li><a class="btn-line" th:href="@{/users/login}">로그인</a></li>
+        <li><a class="btn-fill" th:href="@{/users/join}">회원가입</a></li>
+      </ul>
+      <div sec:authorize="isAuthenticated()">
+        <p class="oc-user"><i data-lucide="user-round"></i><span><b sec:authentication="principal.name">사용자</b>님</span></p>
+        <form th:action="@{/users/logout}" method="post">
+          <button type="submit" class="btn-line w-100"><i data-lucide="log-out"></i>로그아웃</button>
+        </form>
+      </div>
+    </div>
+  </aside>
+
+
+  <!-- 모바일 하단 네비게이션 -->
+  <nav class="bottom-nav">
+    <a th:href="@{/}" data-match="exact"><i data-lucide="home"></i><span>메인</span></a>
+    <a th:href="@{/products}" data-match="/products"><i data-lucide="layout-grid"></i><span>상품</span></a>
+    <a th:href="@{/cart}" data-match="/cart">
+      <i data-lucide="shopping-cart"></i>
+      <span>장바구니</span>
+      <em class="count" sec:authorize="isAuthenticated()" 
+          th:text="${cartCount}" th:if="${cartCount != null and cartCount > 0}"></em>
+    </a>
+    <a th:href="@{/users/mypage}" data-match="/users/mypage"><i data-lucide="user-round"></i><span>My</span></a>
+  </nav>
 
 
 </th:block>
