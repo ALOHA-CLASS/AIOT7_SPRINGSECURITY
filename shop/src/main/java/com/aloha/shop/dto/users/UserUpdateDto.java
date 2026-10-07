@@ -2,7 +2,6 @@ package com.aloha.shop.dto.users;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 // 회원정보 수정 폼 DTO

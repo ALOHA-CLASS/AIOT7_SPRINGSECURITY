@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.aloha.shop.domain.shop.CartItem;
 import com.aloha.shop.repository.shop.CartItemRepository;
-import com.aloha.shop.repository.shop.ProductRepository;
-import com.aloha.shop.repository.users.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,8 +17,8 @@ import lombok.RequiredArgsConstructor;
 public class CartItemServiceImpl implements CartItemService {
 
   private final CartItemRepository cartItemRepository;
-  private final ProductRepository productRepository;
-  private final UserRepository userRepository;
+  // private final ProductRepository productRepository;
+  // private final UserRepository userRepository;
 
   
   @Override

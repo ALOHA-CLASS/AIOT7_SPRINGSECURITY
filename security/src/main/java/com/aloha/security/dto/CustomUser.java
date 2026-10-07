@@ -1,6 +1,5 @@
 package com.aloha.security.dto;
 
-import java.text.Collator;
 import java.util.Collection;
 import java.util.stream.Collectors;
 

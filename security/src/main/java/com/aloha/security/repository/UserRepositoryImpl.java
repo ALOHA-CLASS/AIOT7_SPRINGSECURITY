@@ -1,6 +1,5 @@
 package com.aloha.security.repository;
 
-import java.lang.StackWalker.Option;
 import java.util.Optional;
 
 import org.springframework.stereotype.Repository;

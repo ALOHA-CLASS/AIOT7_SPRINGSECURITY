@@ -78,7 +78,6 @@ public class Orders extends BaseEntity {
 
   // 주문번호 자동 생성
   public static String generateOrderNo() {
-    // TODO: 나중에 OOOO_OO_OOOO 규칙이 있는 주문번호 생성을 해보자
     return UUID.randomUUID().toString();
   }
 
